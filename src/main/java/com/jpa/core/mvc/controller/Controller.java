@@ -75,14 +75,36 @@ public abstract class Controller {
     }
 
     /**
-     * Obtains the controller name.
+     * Obtains the controller name to lowercase.
      * 
      * ? Example: HomeController => home
      * 
      * @return the controller name
      */
-    public String getName() {
+    public String getShortName() {
         return getClass().getSimpleName().toLowerCase().replace("controller", "");
+    }
+
+    /**
+     * Obtains the controller name.
+     * 
+     * ? Example: NewObjectController => NewObject
+     * 
+     * @return the controller name
+     */
+    public String getName() {
+        return getClass().getSimpleName().replace("Controller", "");
+    }
+
+    /**
+     * Retrieves the controller endpoint URL.
+     * 
+     * ? Example: HomeController => /home
+     * 
+     * @return the endpoint controlled
+     */
+    public String getEndPoint() {
+        return "/".concat(getName());
     }
 
     /* =========================================================== */
@@ -127,9 +149,8 @@ public abstract class Controller {
     private void onStartSharedModel() {
 
         // Binds navigation for nav-links highlighting, set to "active" when in the current link.
-        ((Model) getSharedModel().get("nav")).set(getName(), "");
+        ((Model) getSharedModel().get("nav")).set(getShortName(), "");
         // Binds navigation #href links according to the controller's view.
-        ((Model) getSharedModel().get("links")).set(getName(), getView().getPath());
+        ((Model) getSharedModel().get("links")).set(getShortName(), getEndPoint());
     }
-
 }
