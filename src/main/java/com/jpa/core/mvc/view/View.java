@@ -2,6 +2,12 @@ package com.jpa.core.mvc.view;
 
 import com.jpa.core.mvc.model.Model;
 
+/**
+ * A view implementation for the TS-JPA Model-View-Controller concept.
+ * 
+ * @author Tomás Sánchez
+ * @since 1.0
+ */
 public class View {
 
     private String viewName;
@@ -11,7 +17,7 @@ public class View {
     private static final String FILE_EXTENSION = ".html.hbs";
 
     public View(String name) {
-        this.viewName = name;
+        this.viewName = name.substring(0, 1).toUpperCase().concat(name.substring(1));
         this.path = name.concat(FILE_EXTENSION);
     }
 
