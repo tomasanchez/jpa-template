@@ -17,8 +17,8 @@ public class View {
     private static final String FILE_EXTENSION = ".html.hbs";
 
     public View(String name) {
-        this.viewName = name.substring(0, 1).toUpperCase().concat(name.substring(1));
-        this.path = name.concat(FILE_EXTENSION);
+        setViewName(name);
+        setPath(getViewName().concat(FILE_EXTENSION));
     }
 
     /* =========================================================== */
@@ -50,7 +50,7 @@ public class View {
      * @return the renamed view
      */
     public View setViewName(String name) {
-        this.viewName = name;
+        this.viewName = name.substring(0, 1).toUpperCase().concat(name.substring(1));
         return this;
     }
 
