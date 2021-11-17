@@ -13,12 +13,21 @@ import spark.Response;
  */
 public abstract class Controller {
 
-    private static Model sharedModel = new Model();
+    private static Model sharedModel;
+
     private View view;
 
     public Controller() {
-        this.view = new View(getName());
-        this.onInit();
+        setView(new View(getName()));
+        onStartSharedModel();
+        onInit();
+    }
+
+    /**
+     * Initialices the shared model.
+     */
+    static {
+        setSharedModel(new Model()).set("nav", new Model()).set("links", new Model());
     }
 
     /* =========================================================== */
@@ -107,5 +116,20 @@ public abstract class Controller {
      * @param response the spark HTTP response object
      */
     protected abstract void onAfterRendering(Request request, Response response);
+
+    /* =========================================================== */
+    /* Internal methods ------------------------------------------ */
+    /* =========================================================== */
+
+    /**
+     * Shares essential data for the application view model.
+     */
+    private void onStartSharedModel() {
+
+        // Binds navigation for nav-links highlighting, set to "active" when in the current link.
+        ((Model) getSharedModel().get("nav")).set(getName(), "");
+        // Binds navigation #href links according to the controller's view.
+        ((Model) getSharedModel().get("links")).set(getName(), getView().getPath());
+    }
 
 }
