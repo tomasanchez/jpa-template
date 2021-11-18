@@ -6,6 +6,8 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
 
         <!-- Model Classes -->
+        <!-- User -->
+        <class>com.jpa.model.user.User</class>
 
         <properties>
             <property name="hibernate.archive.autodetection" value="class" />
