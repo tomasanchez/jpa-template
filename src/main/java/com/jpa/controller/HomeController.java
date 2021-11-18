@@ -5,6 +5,14 @@ import spark.Response;
 
 public class HomeController extends BaseController {
 
+    /* =========================================================== */
+    /* Overridables ---------------------------------------------- */
+    /* =========================================================== */
+
+    @Override
+    public String getEndPoint(Boolean useId) {
+        return "/";
+    }
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
@@ -13,7 +21,6 @@ public class HomeController extends BaseController {
     @Override
     protected void onInit() {
         // TODO Auto-generated method stub
-
     }
 
     @Override
