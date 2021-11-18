@@ -6,16 +6,29 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * Contains locale-specific texts.
+ * Resource bundles contain locale-specific texts.
  * 
  * <br>
  * </br>
  * 
- * If you need a locale-specific text within your application, you can use the resource bundle to
- * load the locale-specific file from the server and access the texts of it.
+ * When your program needs a locale-specific resource, a text for example, your program can load it
+ * from the resource bundle that is appropriate for the current user's locale. In this way, you can
+ * write program code that is largely independent of the user's locale isolating most, if not all,
+ * of the locale-specific information in resource bundles.
+ * 
+ * <br>
+ * </br>
+ * 
+ * Resoursce Bundle is loaded from a properties file. These files must be in the directory
+ * 
+ * <br>
+ * </br>
+ * 
+ * /resources/locales/i18n-{ISO 639-1}.properties
  * 
  * @author Tomás Sánchez
  * @since 1.0
+ * @see <a>https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes<a/>
  */
 public class ResourceBundle {
 
@@ -62,7 +75,20 @@ public class ResourceBundle {
         return this.properties;
     }
 
+    /**
+     * Updates the i18n locales language.
+     * 
+     * ? If needed loads properties
+     * 
+     * @param lang the language to update.
+     * @return the resource boundle.
+     */
     public ResourceBundle setLang(String lang) {
+
+        if (!Objects.isNull(getLang()) && lang.startsWith(getLang())
+                && !Objects.isNull(getProperties())) {
+            return this;
+        }
 
         if (Objects.isNull(lang) || lang.isEmpty() || lang.length() < 2) {
             this.lang = DEF_LANG;
