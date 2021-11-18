@@ -18,6 +18,16 @@
   </properties>
 
   <dependencies>
+
+    <!-- BEGIN OF JPA -->
+    <dependency>
+      <groupId>org.uqbar-project</groupId>
+      <artifactId>jpa-java8-extras</artifactId>
+      <version>1.0-alpha-1</version>
+    </dependency>
+    <!-- End of JPA -->
+
+
     <!-- BEGIN OF TESTING DEPENDENCIES -->
     <!-- JUNIT Jupiter-->
     <dependency>
