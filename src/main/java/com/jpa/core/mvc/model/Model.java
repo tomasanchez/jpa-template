@@ -65,4 +65,9 @@ public class Model {
         model.put(property, value);
         return this;
     }
+
+    public Model join(Model other) {
+        this.model.putAll(other.model);
+        return this;
+    }
 }

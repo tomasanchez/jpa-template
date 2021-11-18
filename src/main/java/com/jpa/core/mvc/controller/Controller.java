@@ -174,8 +174,7 @@ public abstract class Controller {
      * @return a Model and View
      */
     public ModelAndView getModelAndView() {
-        return new ModelAndView(getView().getModel().combine(getSharedModel()),
-                getView().getPath());
+        return new ModelAndView(getView().getModel().join(getSharedModel()), getView().getPath());
     }
 
     /**
@@ -185,7 +184,7 @@ public abstract class Controller {
      * @return a Model and View
      */
     public ModelAndView getModelAndView(String path) {
-        return new ModelAndView(getView().getModel().combine(getSharedModel()), path);
+        return new ModelAndView(getView().getModel().join(getSharedModel()), path);
     }
 
     /* =========================================================== */
