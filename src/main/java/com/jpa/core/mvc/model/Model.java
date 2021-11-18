@@ -3,6 +3,7 @@ package com.jpa.core.mvc.model;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import com.google.gson.Gson;
 
@@ -69,5 +70,18 @@ public class Model {
     public Model join(Model other) {
         this.model.putAll(other.model);
         return this;
+    }
+
+    public Model replaceAll(BiFunction<? super String, ? super Object, ? extends Object> function) {
+        model.replaceAll(function);
+        return this;
+    }
+
+    public Map<String, Object> getData() {
+        Map<String, Object> finalModel = new HashMap<String, Object>();
+        finalModel.putAll(model);
+        finalModel
+                .replaceAll((k, v) -> v.getClass().equals(Model.class) ? ((Model) v).getData() : v);
+        return finalModel;
     }
 }

@@ -7,8 +7,10 @@ import static spark.Spark.get;
 import static spark.Spark.patch;
 import static spark.Spark.post;
 import static spark.Spark.put;
+import java.util.Map;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
+import com.jpa.i18n.ResourceBundle;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -25,6 +27,7 @@ public abstract class Controller {
     private static Model sharedModel;
     private static TemplateEngine engine;
     private static ControllerInitialization DEF_INIT = ControllerInitialization.ONLY_GET;
+    private static ResourceBundle i18n = new ResourceBundle();
     private View view;
 
     /* =========================================================== */
@@ -34,7 +37,7 @@ public abstract class Controller {
     public Controller() {
         setView(new View(getName()));
         onStartSharedModel();
-        before(getEndPoint(), this::onBeforeRendering);
+        before(getEndPoint(), this::onBeforeBeforeRendering);
         onInitEndpoints();
         onInit();
         after(getEndPoint(), this::onAfterRendering);
@@ -44,7 +47,8 @@ public abstract class Controller {
      * Initialices the shared model.
      */
     static {
-        setSharedModel(new Model()).set("nav", new Model()).set("links", new Model());
+        setSharedModel(new Model()).set("nav", new Model()).set("links", new Model()).set("i18n",
+                new Model(getI18n().getProperties()));
     }
 
     /**
@@ -98,6 +102,10 @@ public abstract class Controller {
      */
     public static void setEngine(TemplateEngine templateEngine) {
         engine = templateEngine;
+    }
+
+    public static ResourceBundle getI18n() {
+        return i18n;
     }
 
     /**
@@ -174,7 +182,7 @@ public abstract class Controller {
      * @return a Model and View
      */
     public ModelAndView getModelAndView() {
-        return new ModelAndView(getView().getModel().join(getSharedModel()), getView().getPath());
+        return new ModelAndView(getModelMap(), getView().getPath());
     }
 
     /**
@@ -184,7 +192,7 @@ public abstract class Controller {
      * @return a Model and View
      */
     public ModelAndView getModelAndView(String path) {
-        return new ModelAndView(getView().getModel().join(getSharedModel()), path);
+        return new ModelAndView(getModelMap(), path);
     }
 
     /* =========================================================== */
@@ -197,6 +205,19 @@ public abstract class Controller {
      * onBeforeRendering and onAfterRendering hooks.
      */
     protected abstract void onInit();
+
+
+    /**
+     * This method is called every time a view is rendered, is shared between all the controllers.
+     * 
+     * @param request the Spark HTTP request object
+     * @param response the Spark HTTP response object
+     */
+    private void onBeforeBeforeRendering(Request request, Response response) {
+        // Updates locales.
+        getI18n().setLang(request.headers("Accept-Language"));
+        onBeforeRendering(request, response);
+    }
 
     /**
      * 
@@ -442,6 +463,10 @@ public abstract class Controller {
     /* Internal methods ------------------------------------------ */
     /* =========================================================== */
 
+    /**
+     * 
+     * Inits corresponding endpoints.
+     */
     private void onInitEndpoints() {
 
         switch (getInitialization()) {
@@ -497,5 +522,14 @@ public abstract class Controller {
     private Object unImplementedMethod(Response response) {
         response.status(501);
         return response;
+    }
+
+    /**
+     * Shortcut method for obtainning the final Map model.
+     * 
+     * @return the final map model.
+     */
+    private Map<String, Object> getModelMap() {
+        return getView().getModel().join(getSharedModel()).getData();
     }
 }
