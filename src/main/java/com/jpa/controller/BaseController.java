@@ -2,9 +2,12 @@ package com.jpa.controller;
 
 import java.util.Map;
 import com.jpa.core.mvc.controller.Controller;
+import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
+import org.uqbarproject.jpa.java8.extras.transaction.TransactionalOps;
 
 
-public abstract class BaseController extends Controller {
+public abstract class BaseController extends Controller
+        implements WithGlobalEntityManager, TransactionalOps {
 
 
     /* =========================================================== */
