@@ -1,13 +1,17 @@
 package com.jpa.app;
 
-import static spark.Spark.get;
 import static spark.Spark.port;
 import static spark.Spark.staticFileLocation;
 import static spark.debug.DebugScreen.enableDebugScreen;
+import com.jpa.core.mvc.controller.Controller;
+import com.jpa.core.services.ControllerLoaderService;
+import spark.TemplateEngine;
+import spark.template.handlebars.HandlebarsTemplateEngine;
 
 public class Router {
 
     private static final Integer port = 7070;
+    private static final TemplateEngine ENGINE = new HandlebarsTemplateEngine();
 
     public static void main(String[] args) {
         // ! DISABLE DEBUGGER SCREEB WHEN IN PRODUCTION
@@ -24,6 +28,8 @@ public class Router {
     }
 
     private static void serveRoutes() {
-        get("/", (req, res) -> "Hello world!");
+        // ! INJECT Template Engine into controller class
+        Controller.setEngine(ENGINE);
+        ControllerLoaderService.getService().findAll();
     }
 }
