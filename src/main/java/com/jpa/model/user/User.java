@@ -1,13 +1,17 @@
-package com.jpa.model.User;
+package com.jpa.model.user;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import com.jpa.core.database.PersistentEntity;
 
+@Entity
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"uname"})})
 public class User extends PersistentEntity {
 
 
     private String uname;
     private String password;
-
 
     public User() {}
 
@@ -33,6 +37,5 @@ public class User extends PersistentEntity {
         this.password = password;
         return this;
     }
-
 
 }
