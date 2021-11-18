@@ -3,6 +3,7 @@ package com.jpa.core.services;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -43,8 +44,8 @@ public class ControllerLoaderService {
         return fetchWhenEmpty().get(name);
     }
 
-    public Set<Controller> findAll() {
-        return (Set<Controller>) fetchWhenEmpty().values();
+    public List<Controller> findAll() {
+        return fetchWhenEmpty().values().stream().collect(Collectors.toList());
     }
 
     /* =========================================================== */
