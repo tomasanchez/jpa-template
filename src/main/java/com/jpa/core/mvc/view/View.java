@@ -57,7 +57,7 @@ public class View {
     /**
      * Obtains the endpoint.
      * 
-     * @return the view uri
+     * @return the view file path
      */
     public String getPath() {
         return path;
