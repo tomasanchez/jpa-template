@@ -113,6 +113,7 @@ public class ResourceBundle {
 
         try {
             properties.load(inputStream);
+            properties.put("lang", this.getLang());
         } catch (IOException e) {
             e.printStackTrace();
         }
