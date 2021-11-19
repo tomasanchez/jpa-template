@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.jpa.controller.BaseController;
 import com.jpa.core.mvc.controller.Controller;
 import org.reflections.Reflections;
 
@@ -31,6 +32,7 @@ public class ControllerLoaderService {
 
         if (instance == null) {
             instance = new ControllerLoaderService();
+            BaseController.initBaseController();
         }
 
         return instance;
