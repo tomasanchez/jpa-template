@@ -65,8 +65,9 @@ public class LogInController extends BaseController {
     /* =========================================================== */
     /* Event Handlers -------------------------------------------- */
     /* =========================================================== */
+
     /**
-     * Log In Event Handler.
+     * Log In Event Handler, triggered when an user request POST on the login form.
      * 
      * @param request the spark HTTP request object
      * @param response the spark HTTP response object
@@ -97,6 +98,7 @@ public class LogInController extends BaseController {
     }
 
     /**
+     * Log Out event handler, triggered when an user request POST on a log out form.
      * 
      * @param request the spark HTTP request object
      * @param response the spark HTTP response object
