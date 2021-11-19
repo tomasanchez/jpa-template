@@ -354,7 +354,7 @@ public abstract class Controller {
         String path = getEndPoint(useId);
 
         if (useEngine) {
-            post(path, this::onGet, getEngine());
+            post(path, this::onPost, getEngine());
         } else {
             post(path, this::onPostResponse);
         }
