@@ -80,8 +80,13 @@ public class Model {
     public Map<String, Object> getData() {
         Map<String, Object> finalModel = new HashMap<String, Object>();
         finalModel.putAll(model);
-        finalModel
-                .replaceAll((k, v) -> v.getClass().equals(Model.class) ? ((Model) v).getData() : v);
+        finalModel.replaceAll((k, v) -> {
+            try {
+                return v.getClass().equals(Model.class) ? ((Model) v).getData() : v;
+            } catch (NullPointerException e) {
+                return v;
+            }
+        });
         return finalModel;
     }
 }
