@@ -57,25 +57,12 @@
             <!-- Home -->
             <li class="nav-item">
               <a
-                class="nav-link {{navigation.home}}"
+                class="nav-link {{nav.home}}"
                 aria-current="page"
-                href="{{hrefs.home}}"
+                href="{{links.home}}"
               >{{i18n.home}}</a>
             </li>
-            <li class="nav-item">
-              <a
-                class="nav-link {{navigation.rescue}}"
-                aria-current="page"
-                href="{{hrefs.rescue}}"
-              >{{i18n.rescue}}</a>
-            </li>
             {{#if loggedIn}}
-              <li class="nav-item">
-                <a
-                  class="nav-link {{navigation.pets}}"
-                  href="{{hrefs.pets}}"
-                >{{i18n.pets}}</a>
-              </li>
               <li class="dropdown nav-item">
                 <a
                   href="#"
@@ -85,8 +72,8 @@
                   aria-expanded="false"
                 >
                   <img
-                    src="https://github.com/{{user.usuario}}.png"
-                    alt="{{user.usuario}}"
+                    src="https://github.com/{{user.uname}}.png"
+                    alt="{{user.uname}}"
                     width="45"
                     height="45"
                     class="rounded-circle"
@@ -105,7 +92,7 @@
                   <li>
                     <form
                       method="POST"
-                      action="{{hrefs.login}}"
+                      action="{{links.login}}"
                       class="mt-0 mb-0"
                     >
                       <button
@@ -122,13 +109,14 @@
               </li>
             {{else}}
               <li class="nav-item">
-                <a class="nav-link" href="{{hrefs.login}}">Log In</a>
+                <a class="nav-link" href="{{links.login}}">Log In</a>
               </li>
             {{/if}}
           </ul>
         </div>
       </div>
     </nav>
+
     {{#block "content"}}{{/block}}
 
     <!-- Flexbox container for aligning the toasts -->
@@ -140,7 +128,7 @@
       <!-- Then put toasts within -->
       <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
-          <strong class="me-auto">Rescate de Patitas</strong>
+          <strong class="me-auto">JPA Template</strong>
           <small>{{i18n.justNow}}</small>
           <button
             type="button"
