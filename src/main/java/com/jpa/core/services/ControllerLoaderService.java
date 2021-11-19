@@ -32,6 +32,7 @@ public class ControllerLoaderService {
 
         if (instance == null) {
             instance = new ControllerLoaderService();
+            instance.fetchWhenEmpty();
             BaseController.initBaseController();
         }
 
@@ -66,6 +67,8 @@ public class ControllerLoaderService {
                     Controller controller = null;
                     try {
                         controller = c.getDeclaredConstructor().newInstance();
+                        System.out.println(
+                                "Controller ".concat(controller.getName()).concat(" initializes!"));
                     } catch (InstantiationException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
