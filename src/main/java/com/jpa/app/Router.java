@@ -15,6 +15,7 @@ public class Router {
 
     public static void main(String[] args) {
         // ! DISABLE DEBUGGER SCREEB WHEN IN PRODUCTION
+        new Bootstrap().bootstrapData();
         enableDebugScreen();
         server();
     }
