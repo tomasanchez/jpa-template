@@ -63,6 +63,7 @@
               >{{i18n.home}}</a>
             </li>
             {{#if loggedIn}}
+            <!-- Showed when user has logged in -->
               <li class="dropdown nav-item">
                 <a
                   href="#"
@@ -72,7 +73,7 @@
                   aria-expanded="false"
                 >
                   <img
-                    src="https://github.com/{{user.uname}}.png"
+                    src="https://github.com/tomasanchez.png"
                     alt="{{user.uname}}"
                     width="45"
                     height="45"
@@ -87,7 +88,7 @@
                   <li><a
                       class="btn dropdown-item disabled"
                       href="#"
-                    >Settings</a></li>
+                    >{{i18n.settings}}</a></li>
                   <li><hr class="dropdown-divider" /></li>
                   <li>
                     <form
@@ -108,8 +109,9 @@
                 </ul>
               </li>
             {{else}}
+            <!-- Showed when user has not logged in -->
               <li class="nav-item">
-                <a class="nav-link" href="{{links.login}}">Log In</a>
+                <a class="nav-link" href="{{links.login}}">{{i18n.logIn}}</a>
               </li>
             {{/if}}
           </ul>

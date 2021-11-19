@@ -40,7 +40,8 @@ public class LogInController extends BaseController {
 
     @Override
     protected void onAfterRendering(Request request, Response response) {
-        getView().getModel().set("isValid", "");
+        // Clean view model invalid password class
+        getView().getModel().set("isValid", "").set("username", "");
     }
 
     /* =========================================================== */
@@ -85,7 +86,7 @@ public class LogInController extends BaseController {
         onAuthenticate(user);
 
         if (!isLogged()) {
-            getView().getModel().set("isValid", "is-invalid");
+            getView().getModel().set("isValid", "is-invalid").set("username", username);
             response.status(400);
             return;
         }
