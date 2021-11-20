@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/tomasanchez/jpa-template/compare/v1.0.0...v1.1.0) (2021-11-20)
+
+
+### Features
+
+* **controller:** not found controller ([7cadb04](https://github.com/tomasanchez/jpa-template/commit/7cadb040c4b7eccccc352d253d8e40bad3847eef))
+* **mvc:** not found view ([3fb2306](https://github.com/tomasanchez/jpa-template/commit/3fb2306b2976d8dc2f356a868b5bcbcb7b7e1ff7))
+
+
+### Bug Fixes
+
+* halt request ([6e65b92](https://github.com/tomasanchez/jpa-template/commit/6e65b92f460a9b6170f43b9e13f2b4800ac7da45))
+* **service:** no longer has package hardcoded ([decb38c](https://github.com/tomasanchez/jpa-template/commit/decb38c67b27d077f0c06820b31b05a664adaeb9))
+
 ## 1.0.0 (2021-11-19)
 
 

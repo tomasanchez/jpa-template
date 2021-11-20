@@ -1,6 +1,6 @@
 {
   "name": "jpa-tseed",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Spark micro framework seed by Tomás Sánchez",
   "main": "index.js",
   "repository": "https://github.com/tomasanchez/jpa-template.git",
@@ -8,7 +8,8 @@
   "license": "MIT",
   "dependencies": {
     "standard-version": "^9.3.2"
-  },  "scripts": {
+  },
+  "scripts": {
     "verify": "mvn verify",
     "test": "mvn test",
     "release": "standard-version --release-as patch",
