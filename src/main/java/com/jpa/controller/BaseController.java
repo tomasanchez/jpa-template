@@ -1,5 +1,7 @@
 package com.jpa.controller;
 
+import static spark.Spark.halt;
+
 import java.util.Map;
 import java.util.Objects;
 import com.jpa.core.mvc.controller.Controller;
@@ -10,6 +12,7 @@ import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 import org.uqbarproject.jpa.java8.extras.transaction.TransactionalOps;
 import spark.Request;
 import spark.Response;
+
 
 
 public abstract class BaseController extends Controller
@@ -128,6 +131,7 @@ public abstract class BaseController extends Controller
      */
     protected void onRequireSession(Request request, Response response) {
         if (!isLogged(request) || !isLogged()) {
+            halt(401);
             response.redirect(ControllerLoaderService.getService().find("login").getEndPoint(),
                     401);
         }
