@@ -195,19 +195,6 @@ public abstract class Controller {
         return new ModelAndView(getModelMap(), path);
     }
 
-    /**
-     * Sets a Not Found View, must be the last route set.
-     */
-    public static void setNotFound() {
-        get("*", (req, res) -> {
-            if (!req.pathInfo().startsWith("/static")) {
-                res.status(404);
-                return getEngine().render(new ModelAndView(getSharedModel().getData(),
-                        "NotFound".concat(View.getFileExtension())));
-            }
-            return null;
-        });
-    }
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
     /* =========================================================== */
