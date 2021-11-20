@@ -34,6 +34,7 @@ public class ControllerLoaderService {
             instance = new ControllerLoaderService();
             instance.fetchWhenEmpty();
             BaseController.initBaseController();
+            Controller.setNotFound();
         }
 
         return instance;

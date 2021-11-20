@@ -1,0 +1,29 @@
+
+{{#partial "pageTitle"}}
+  {{i18n.notFoundPageTitle}}
+{{/partial}}
+
+{{#partial "content"}}
+    <main id="hero" class="container overflow-auto">
+      <div class="container col-xxl-8 px-4 py-5">
+        <div class="row flex-lg-row-reverse align-items-center g-5 py-5">
+            <div class="col-10 col-sm-8 col-lg-6 mx-auto">
+                <img
+                src="assets/error.png"
+                class="d-block mx-lg-auto img-fluid user-select-none"
+                alt="Spark"
+                height="auto"
+                width="100%"
+                loading="lazy"
+                />
+            </div>
+            <div class="col-lg-6">
+            <h1 class="display-5 fw-bold lh-1 mb-3">{{i18n.notFoundViewTitle}}</h1>
+            <p class="lead">{{i18n.notFoundText}}</p>
+          </div>
+        </div>
+      </div>
+    </main>
+{{/partial}}
+
+{{> layouts/Bootstrap-Navbar.html.hbs }}
