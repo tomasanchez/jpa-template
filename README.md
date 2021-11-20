@@ -40,7 +40,7 @@ There is no need for you to worry about the `core` package, _it just works_. Mod
 
 ##### `MVC` package
 
-The **`Controller`** class is a generic implementation. Your controllers must inherit this class. By default all controllers are set to the path `/controllername` with the method [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), and if a [`TemplateEngine`]((https://sparkjava.com/documentation#views-and-templates)) is set, it executes a _method_ that responses with a [`ModelAndView`](https://sparkjava.com/documentation#views-and-templates), this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HomeController` would send an html made from the `HomeController.html.hbs` template.
+The **`Controller`** class is a generic implementation. Your controllers must inherit this class. By default all controllers are set to the path `/controllername` with the method [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), and if a [`TemplateEngine`]((https://sparkjava.com/documentation#views-and-templates)) is set, it executes a _method_ that responses with a [`ModelAndView`](https://sparkjava.com/documentation#views-and-templates).
 
 `Controller` has multiple initialization methods, which will initialize different [`routes`](https://sparkjava.com/documentation#routes), by default only `GET`. you can `@Override` this by _overriding_ the method [`getInitialization()`]() like, for example in [`LoginController`](https://github.com/tomasanchez/jpa-template/blob/356169760683433c137132d0bbe7ebaecf7cad40/src/main/java/com/jpa/controller/LogInController.java#L19-L22), the `ControllerInitialization` availables are:
 
@@ -77,10 +77,37 @@ You should override this methods, implementating the lifecycle of the `ViewModel
 
 <br></br>
 
-####  How does it work?
+The **`View`** class provides a layer of abstraction, representing the logic behind the matching and mapping of an `<HTML/>` file. It contains a `Model`, which will be refered as `ViewModel`, this will allow you to reflect the changes in the _actual_ view, the UI.
 
-The `Controller` has a `View` which contains a `Model`, this last one will be refered as `ViewModel`. You should manipulate this `ViewModel` to reflect changes on your view, when a request is being responded. Your controller will be automatically instantiate by the `ControllerLoaderService` as long as it inherits from `Controller`  class and it is located inside the `controller` package (not the `core.mvc.controller` package), so you don't need to worry about initialization, nor trying to use a _singleton_ approach.
+**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HomeController` would send an html made from the `HomeController.html.hbs` template.
 
+<br></br>
+
+The `Model` is another abstraction, in this case of a `Map<String, Object>`, providing convenience methods such as instantiation via `JSON` or `Properies` _file_. Model also provides fluent setter for properties, and can be joined with other models (puts one map into another).
+
+**Note**: Each `View` has a `Model` instance. In addition a `Model` can contain another `Model` within. As a `Controller` has a `View` which contains a `ViewModel`, controllers will have different `Model` instances, however there is a shared `Model` among them.
+
+
+![View Example](./assets/view-snippet.svg)
+
+
+`{{isValid}}` is a property of the `ViewModel` which can be set/unset by its corresponding controller, in this scenario it is used to modify a `Bootstrap 5` class for the `input form-control`, the `is-invalid` which alerts an error message when set.
+
+
+<br></br>
+
+**How does it all work?**
+
+The `Controller` has a `View` which contains a `Model`, the `ViewModel`. You should manipulate this `ViewModel` to reflect changes on your view, when a request is being responded. Your controller will be automatically instantiate by the `ControllerLoaderService` as long as it inherits from `Controller`  class and it is located inside the `controller` package (not the `core.mvc.controller` package), so you don't need to worry about initialization, nor trying to use a _singleton_ approach. With this a `View` and a`ViewModel` will be automatically initializated, ready to be modified according to your needs.
+
+<br></br>
+
+**What do I have to do?** / **Quick Start**
+
+- Create a new `class ExampleController extends Controller` inside the `controller` package (not the `core.mvc.controller` package)
+- Create a new `file Example.html.hbs` with the same name as your controller. Ex. _`ToDoController`_, and _`ToDo.html.hbs`_ (case sensitive)
+- Run `main` in `Router` class.
+- Get your view at the endpoint. Ex. _`ToDoController`_, and _`ToDo.html.hbs`_ and `/todo`
 
 <br></br>
 
