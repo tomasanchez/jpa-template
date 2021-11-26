@@ -23,9 +23,7 @@ __DISCLAIMER__: using this seed __DOES NOT__ guarantee passing the assignment, n
 
 ### There are a lot of folders! Where do I start?v
 
-#### Core 
-
-The core folder represents the fundamental components of this seed. There you will find a `mvc` _package_ where the `Model View Controller` is implemented.
+The **`core`** package represents the fundamental components of this seed. There you will find a `mvc` _package_ where the `Model View Controller` is implemented.
 
 
 `database` _package_ contains abstract convenience super classes which will help you with the model design.
@@ -38,7 +36,7 @@ The core folder represents the fundamental components of this seed. There you wi
 
 There is no need for you to worry about the `core` package, _it just works_. Modifyng it may require some understanding of the MVC pattern and the seed itself.
 
-##### `MVC` package
+#### `MVC` package
 
 The **`Controller`** class is a generic implementation. Your controllers must inherit this class. By default all controllers are set to the path `/controllername` with the method [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), and if a [`TemplateEngine`]((https://sparkjava.com/documentation#views-and-templates)) is set, it executes a _method_ that responses with a [`ModelAndView`](https://sparkjava.com/documentation#views-and-templates).
 
@@ -108,6 +106,190 @@ The `Controller` has a `View` which contains a `Model`, the `ViewModel`. You sho
 - Create a new `file Example.html.hbs` with the same name as your controller. Ex. _`ToDoController`_, and _`ToDo.html.hbs`_ (case sensitive)
 - Run `main` in `Router` class.
 - Get your view at the endpoint. Ex. _`ToDoController`_, and _`ToDo.html.hbs`_ and `/todo`
+
+<br></br>
+
+## Going Further
+
+<br></br>
+
+### Routing
+
+This seed contains 2 (two) views, `Home` and `LogIn` and a custom `Not Found` mapped view. Note that each view has its own controller, and all of these inherit from a `BaseController`. This controller has no associated view, as it is purely an implementation of shared methods and convenience shortcuts.
+
+In this seed, used for developing assignments in `UTN-FRBA`, the `BaseController` implements `WithGlobalEntityManager, TransactionalOps`, interface provided by professors of the course [`System's Design`](https://dds-jv.github.io/), which includes convenience methods for transactional operations.
+
+<br></br>
+
+![Routing](./assets/app-routing.png)
+
+<br></br>
+
+### Database
+
+The seed provides you with a `PersistentEntity` class which can be extended by your use case entities which will be persisted in a database. This is only a generic class with convenience attributes for an entity's `Id`. See how the `User` class extends `PersistentEntity`.
+
+```java
+@MappedSuperclass
+public abstract class PersistentEntity implements Serializable {
+
+    @Id
+    @GeneratedValue
+    private long id;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+}
+```
+
+
+In addition, there is a `PersistentEntitySet<T>` generic class, which allows you to easily create `CRUD Repositories`.
+
+The interface provided:
+
+```java
+@MappedSuperclass
+public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager {
+
+    /**
+     * Retrieves Table name (class name).
+     * 
+     * ? Example: PersistentEntitySet<User> => Table name is User
+     * 
+     * @return the table name
+     */
+    protected String getTableName();
+
+    /**
+     * Obtains all entities in the database.
+     * 
+     * @return an entity list.
+     */
+    public List<T> getEntitySet();
+
+    /**
+     * Persists an entity in database.
+     * 
+     * @param entity to be persisted
+     * @return persisted entity
+     */
+    public T createEntity(T entity);
+    
+
+    /**
+     * Obtains a single entity.
+     * 
+     * @param id the entity unique id
+     * @return entity or null.
+     */
+    public T getEntity(long id);
+
+    /**
+     * Updates the database with the entity.
+     * 
+     * @param entity to be updated
+     * @return the updated entity
+     */
+    public T updateEntity(T entity);
+
+    /**
+     * Updates the database with the entity.
+     * 
+     * @param id the entity's unique id
+     * @return the updated entity
+     */
+    public T updateEntity(Long id);
+
+    /**
+     * Removes an entity from database.
+     * 
+     * @param entity the entity to be deleted
+     */
+    public void deleteEntity(T entity);
+
+    /**
+     * Removes an entity from database.
+     * 
+     * @param id the entity unique id
+     */
+    public void deleteEntity(Long id);
+}
+```
+
+**NOTE**: You can easily add your own custom implementation in a child class.
+
+See this case of `UserRepository`
+
+```java
+public class UserRepository extends PersistentEntitySet<User> {
+
+    /**
+     * Obtains an user from database that matches the given username and password.
+     * 
+     * @param username to match
+     * @param password to validate
+     * @return An authenticated user
+     */
+    public User getEntity(String username, String password);
+}
+```
+
+<br></br>
+
+### Internationalization
+
+There is a custom implementation of a `ResourceBundle`, it requires a `.properties` file located in `/resources/locales/`, and also to be named as it follows: `i18n-{ISO 639-1}.properties`. See [`ISO 639-1`](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) for further information. 
+
+These properties will be loaded automatically into a model, available for the controller, an so its view. 
+
+Being your `i18n-en.properties` file:
+
+```properties
+inputLabel=An Input label
+inputPh=Insert a text
+```
+
+Therefore, you can access these translations from a view this way:
+
+```hbs
+<label>{{i18n.inputLabel}}</label>
+<input
+ placeholder="{{i18n.inputPh}}"
+/>
+```
+
+Which will result in:
+
+```hbs
+<label>An Input label</label>
+<input
+ placeholder="Insert a text"
+/>
+```
+
+For each controller, before `onBeforeRendering`, the request's header [`Accept-Language`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language) will be evaluated, if it is the same as the current used, there will be no changes, otherwise, there will be a try to load the requested language from a `.properties` file, if it exists, else the default language will be used.
+
+Following the previous example, if the `Accept-Language` header switchs to `es`, and there is a `i18n-es.properties`:
+
+
+```properties
+inputLabel=Una etiqueta
+inputPh=Ingrese un texto
+```
+
+Will result in:
+
+```hbs
+<label>Una etiqueta</label>
+<input
+ placeholder="Ingrese un texto"
+/>
+```
 
 <br></br>
 
