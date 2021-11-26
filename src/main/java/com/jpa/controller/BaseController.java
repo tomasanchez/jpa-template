@@ -60,19 +60,15 @@ public abstract class BaseController extends Controller
      * @param location an endpoint, a controller name or a path
      */
     public void navTo(Response response, String location) {
+
         if (location.startsWith("/")) {
             response.redirect(location);
             return;
-        } else {
-            Controller c = ControllerLoaderService.getService().find(location);
-            if (Objects.isNull(c)) {
-                response.redirect("/".concat(location));
-                return;
-            } else {
-                response.redirect(c.getEndPoint());
-                return;
-            }
         }
+
+        Controller c = ControllerLoaderService.getService().find(location);
+        response.redirect(Objects.isNull(c) ? "/".concat(location) : c.getEndPoint());
+
     }
     /* =========================================================== */
     /* Authentification ------------------------------------------ */
