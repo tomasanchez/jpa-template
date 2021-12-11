@@ -2,6 +2,8 @@ package com.jpa.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -138,7 +140,7 @@ public class ResourceBundle {
         }
 
         try {
-            properties.load(inputStream);
+            properties.load(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
             properties.put("lang", this.getLang());
         } catch (IOException e) {
             e.printStackTrace();
