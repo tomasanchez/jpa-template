@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/tomasanchez/jpa-template/compare/v1.1.0...v1.1.1) (2021-12-11)
+
+
+### Features
+
+* **core:** active navigation support ([a591106](https://github.com/tomasanchez/jpa-template/commit/a5911063de5cf681b9ef2f5ffc99a57b98df7822))
+
+
+### Bug Fixes
+
+* **controller:** 404 controller before rendering ([015ef06](https://github.com/tomasanchez/jpa-template/commit/015ef061e5be3a52fbf513bf6205c444b73a1104))
+* **core:** controller full crud endpoints ([be609b5](https://github.com/tomasanchez/jpa-template/commit/be609b5acda56978c50a56b68ed2a08ed6c2bc9c))
+
 ## [1.1.0](https://github.com/tomasanchez/jpa-template/compare/v1.0.0...v1.1.0) (2021-11-20)
 
 
