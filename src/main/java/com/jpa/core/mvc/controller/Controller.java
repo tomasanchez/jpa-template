@@ -176,7 +176,8 @@ public abstract class Controller {
      * @return the endpoint controlled
      */
     public String getEndPoint(Boolean useId) {
-        return useId ? "/".concat(getName()).concat("/:id") : "/".concat(getName()).toLowerCase();
+        return useId ? "/".concat(getName()).concat("/:id").toLowerCase()
+                : "/".concat(getName()).toLowerCase();
     }
 
     /**
