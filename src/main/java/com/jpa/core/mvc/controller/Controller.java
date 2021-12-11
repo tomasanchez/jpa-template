@@ -216,7 +216,7 @@ public abstract class Controller {
      * @param request the Spark HTTP request object
      * @param response the Spark HTTP response object
      */
-    private void onBeforeBeforeRendering(Request request, Response response) {
+    protected void onBeforeBeforeRendering(Request request, Response response) {
         // Updates locales.
         getI18n().setLang(request.headers("Accept-Language"));
         onBeforeRendering(request, response);

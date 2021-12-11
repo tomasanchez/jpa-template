@@ -18,7 +18,7 @@ public class NotFoundController extends Controller {
 
     @Override
     protected ModelAndView onGet(Request request, Response response) {
-
+        super.onBeforeBeforeRendering(request, response);
         if (!request.pathInfo().startsWith("/static")) {
             response.status(404);
             return super.onGet(request, response);
@@ -41,6 +41,12 @@ public class NotFoundController extends Controller {
     protected void onInit() {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    protected void onBeforeBeforeRendering(Request request, Response response) {
+        // Avoids using the same call for all controllers.
+        return;
     }
 
     @Override
