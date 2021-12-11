@@ -219,6 +219,7 @@ public abstract class Controller {
     protected void onBeforeBeforeRendering(Request request, Response response) {
         // Updates locales.
         getI18n().setLang(request.headers("Accept-Language"));
+        updateNavigationModel(getShortName());
         onBeforeRendering(request, response);
     }
 
@@ -535,5 +536,15 @@ public abstract class Controller {
      */
     private Map<String, Object> getModelMap() {
         return getView().getModel().join(getSharedModel()).getData();
+    }
+
+    /**
+     * Updates navigation active class.
+     * 
+     * @param currentView the current view name
+     */
+    protected void updateNavigationModel(String currentView) {
+        ((Model) getSharedModel().get(NAV_MODEL_NAME))
+                .replaceAll((k, v) -> v = k.equals(currentView) ? "active" : "");
     }
 }
