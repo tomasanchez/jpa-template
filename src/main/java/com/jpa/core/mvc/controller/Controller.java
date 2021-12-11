@@ -219,7 +219,8 @@ public abstract class Controller {
      */
     protected void onBeforeBeforeRendering(Request request, Response response) {
         // Updates locales.
-        getI18n().setLang(request.headers("Accept-Language"));
+        getSharedModel().set("i18n",
+                new Model(getI18n().setLang(request.headers("Accept-Language")).getProperties()));
         updateNavigationModel(getShortName());
         onBeforeRendering(request, response);
     }
