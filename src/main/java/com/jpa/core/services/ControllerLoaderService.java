@@ -32,12 +32,7 @@ public class ControllerLoaderService {
 
         if (instance == null) {
             instance = new ControllerLoaderService();
-            instance.fetchWhenEmpty();
             BaseController.initBaseController();
-        }
-
-        if (instance.controllers.isEmpty()) {
-            System.out.println("\033[0;31mNo controllers were found\033[0m");
         }
 
         return instance;
@@ -88,8 +83,10 @@ public class ControllerLoaderService {
         Arrays.stream(Package.getPackages()).map(Package::getName)
                 .filter(p -> p.contains("controller") && !p.contains("core.mvc.controller"))
                 .findFirst().ifPresent(controllerPackage -> {
+
                     System.out.println("\033[0;36mUsing controllers of package "
                             .concat(controllerPackage).concat("\033[0m"));
+
                     Reflections reflections = new Reflections(controllerPackage);
                     Set<Class<? extends Controller>> classes =
                             reflections.getSubTypesOf(Controller.class);
@@ -126,6 +123,11 @@ public class ControllerLoaderService {
                             }).filter(controller -> !Objects.isNull(controller))
                             .collect(Collectors.toMap(c -> c.getShortName(), c -> c));
                 });
+
+        if (this.controllers.isEmpty()) {
+            System.out.println("\033[0;31mNo controllers were found\033[0m");
+        }
+
         return this.controllers;
     }
 
