@@ -1,41 +1,27 @@
 package com.jpa.model.user;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import com.jpa.core.database.PersistentEntity;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"uname"})})
+@Data
+@EqualsAndHashCode(callSuper = false)
+@NoArgsConstructor
+@AllArgsConstructor
 public class User extends PersistentEntity {
 
-
+    @Column(name = "uname", nullable = false)
     private String uname;
+
+    @Column(name = "password", nullable = false)
     private String password;
-
-    public User() {}
-
-    public User(String uname, String password) {
-        this.uname = uname;
-        this.password = password;
-    }
-
-    public String getUname() {
-        return uname;
-    }
-
-    public User setUname(String uname) {
-        this.uname = uname;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public User setPassword(String password) {
-        this.password = password;
-        return this;
-    }
 
 }
