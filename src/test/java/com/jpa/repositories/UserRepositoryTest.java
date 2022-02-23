@@ -18,7 +18,10 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
     @BeforeEach
     void startTransaction() {
         entityManager().getTransaction().begin();
-        user = new User().setUname("admin").setPassword("admin");
+        user = new User();
+        user.setUname("admin");
+        user.setPassword("password");
+        user.toJSON();
         repository = new UserRepository();
     }
 
@@ -43,7 +46,7 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
 
     @Test
     void userShouldBeNullWhenIdDoesNotExists() {
-        assertNull(repository.getEntity(-1L));
+        assertNull(repository.getEntity("-1L"));
     }
 
 
@@ -71,8 +74,11 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
     @Test
     void entitySetIsRetrieved() {
         int previousSize = repository.getEntitySet().size();
+
         repository.createEntity(user);
-        repository.createEntity(new User().setUname("test"));
+
+        repository.createEntity(new User("test", "test"));
+
         entityManager().flush();
         assertEquals(previousSize + 2, repository.getEntitySet().size());
     }
