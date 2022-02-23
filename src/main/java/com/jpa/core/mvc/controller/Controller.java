@@ -4,17 +4,24 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
-import static spark.Spark.patch;
 import static spark.Spark.post;
 import static spark.Spark.put;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Map;
+import com.jpa.core.mvc.controller.routing.DeleteMapping;
+import com.jpa.core.mvc.controller.routing.GetMapping;
+import com.jpa.core.mvc.controller.routing.PostMapping;
+import com.jpa.core.mvc.controller.routing.PutMapping;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
 import com.jpa.i18n.ResourceBundle;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.TemplateEngine;
+import spark.TemplateViewRoute;
 
 /**
  * A generic controller implementation for the TS-JPA Model-View-Controller concept.
@@ -247,226 +254,6 @@ public abstract class Controller {
     protected abstract void onAfterRendering(Request request, Response response);
 
     /* =========================================================== */
-    /* HTTP Request Handling ------------------------------------- */
-    /* =========================================================== */
-
-    /* ===================== */
-    /* GET REQUEST --------- */
-    /* ===================== */
-
-    /**
-     * Sets HTTP GET response.
-     * 
-     * @return the controller instance
-     */
-    public Controller setGet() {
-        return setGet(false, false);
-    }
-
-    /**
-     * Sets HTTP GET reponse.
-     * 
-     * @param useEngine flag to use or not a template engine
-     * @return the controller instance
-     */
-    public Controller setGet(Boolean useEngine) {
-        return setGet(useEngine, false);
-    }
-
-    /**
-     * Sets HTTP GET reponse.
-     * 
-     * @param useEngine flag to use or not a template engine
-     * @param useId flag to use or not an id endpoint
-     * @return the controller instance
-     */
-    public Controller setGet(Boolean useEngine, Boolean useId) {
-
-        String path = getEndPoint(useId);
-
-        if (useEngine) {
-            get(path, this::onGet, getEngine());
-        } else {
-            get(path, this::onGetResponse);
-        }
-        return this;
-    }
-
-
-    public Controller setGetFullCrud() {
-        setGet(true);
-        get(getEndPoint().concat("/new"), this::onGetNew);
-        setGet(true, true);
-        return this;
-    }
-
-    /**
-     * Function called when an HTTP GET request is received.
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return an object
-     */
-    protected ModelAndView onGet(Request request, Response response) {
-        return getModelAndView();
-    }
-
-    protected ModelAndView onGetNew(Request request, Response response) {
-        return getModelAndView("New".concat(getView().getPath()));
-    }
-
-    /**
-     * Function called when an HTTP GET request is received and NO Template Engine is used.
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return an object
-     */
-    protected Object onGetResponse(Request request, Response response) {
-        return unImplementedMethod(response);
-    }
-
-    /* ===================== */
-    /* POST REQUEST ======== */
-    /* ===================== */
-
-    /**
-     * Sets the HTTP POST endpoint.
-     * 
-     * @return the controller instance
-     */
-    public Controller setPost() {
-        return setPost(false);
-    }
-
-    /**
-     * Sets the HTTP POST endpoint.
-     * 
-     * @param useEngine if uses a template engine
-     * @return the controller instance
-     */
-    public Controller setPost(Boolean useEngine) {
-        return setPost(useEngine, false);
-    }
-
-    /**
-     * Sets the HTTP POST endpoint.
-     * 
-     * @param useEngine if uses a template engine
-     * @param useId if uses id endpoint
-     * @return the controller instance
-     */
-    public Controller setPost(Boolean useEngine, Boolean useId) {
-
-        String path = getEndPoint(useId);
-
-        if (useEngine) {
-            post(path, this::onPost, getEngine());
-        } else {
-            post(path, this::onPostResponse);
-        }
-
-        return this;
-    }
-
-    /**
-     * Function called when an HTTP POST request is received.
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return a Model and View
-     */
-    protected ModelAndView onPost(Request request, Response response) {
-        return getModelAndView();
-    }
-
-    /**
-     * Function called when an HTTP GET request is received an NO Template Engine is used.
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return an object
-     */
-    protected Object onPostResponse(Request request, Response response) {
-        return unImplementedMethod(response);
-    }
-
-    /* ===================== */
-    /* PUT REQUEST ======= */
-    /* ===================== */
-
-    /**
-     * Sets the endpoit for HTTP PUT request;
-     * 
-     * @return the controller instance.
-     */
-    public Controller setPut() {
-        put(getEndPoint(true), this::onPutResponse);
-        return this;
-    }
-
-    /**
-     * Function called when an HTTP PUT/PATCH request is received and NO Template Engine is used.
-     * 
-     * <br>
-     * </br>
-     * 
-     * ? This should not return a Model and View
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return an object
-     */
-    protected Object onPutResponse(Request request, Response response) {
-        return unImplementedMethod(response);
-    }
-
-    /* ===================== */
-    /* PATCH REQUEST ======= */
-    /* ===================== */
-
-    /**
-     * Sets the endpoit for HTTP PATCH request;
-     * 
-     * @return the controller instance.
-     */
-    public Controller setPatch() {
-        patch(getEndPoint(true), this::onPutResponse);
-        return this;
-    }
-
-    /* ===================== */
-    /* DELETE REQUEST ====== */
-    /* ===================== */
-
-    /**
-     * Sets the endpoit for HTTP DELETE request;
-     * 
-     * @return the controller instance.
-     */
-    public Controller setDelete() {
-        delete(getEndPoint(true), this::onDeleteResponse);
-        return this;
-    }
-
-    /**
-     * Function called when an HTTP DELETE request is received and NO Template Engine is used.
-     * 
-     * <br>
-     * </br>
-     * 
-     * ? This should not return a Model and View
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @return an object
-     */
-    protected Object onDeleteResponse(Request request, Response response) {
-        return unImplementedMethod(response);
-    }
-
-
-    /* =========================================================== */
     /* Internal methods ------------------------------------------ */
     /* =========================================================== */
 
@@ -476,37 +263,55 @@ public abstract class Controller {
      */
     private void onInitEndpoints() {
 
-        switch (getInitialization()) {
-            case FULL_CRUD:
-                setGetFullCrud();
-                setPost(true);
-                setPost(true, true);
-                setDelete();
-                setPatch();
-                setPut();
-                break;
-            case CRUD_NOT_ENGINE:
-                setGet(false, true);
-                setGet();
-                setPost(false, true);
-                setPost();
-                setDelete();
-                setPatch();
-                setPut();
-            case GET_POST_DELETE:
-                setGet(true);
-                setGet(true, true);
-                setPost(true);
-                setPost(true, true);
-                setDelete();
-            case GET_POST:
-                setGet(true);
-                setPost(true);
-                break;
-            default:
-                setGet(true);
-                break;
-        }
+        Method[] methods = getClass().getDeclaredMethods();
+
+        // Get Mapping
+        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(GetMapping.class))
+                .forEach(method -> {
+
+                    method.setAccessible(true);
+                    boolean useEngine = method.getAnnotation(GetMapping.class).engine();
+                    String path = method.getAnnotation(GetMapping.class).path();
+
+                    if (useEngine) {
+                        get(path, routeViewMethod(method), getEngine());
+                    } else {
+                        get(path, routeMethod(method));
+                    }
+
+                });
+
+        // Post Mapping
+        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PostMapping.class))
+                .forEach(method -> {
+
+                    method.setAccessible(true);
+                    boolean useEngine = method.getAnnotation(PostMapping.class).engine();
+                    String path = method.getAnnotation(PostMapping.class).path();
+
+                    if (useEngine) {
+                        post(path, routeViewMethod(method), getEngine());
+                    } else {
+                        post(path, routeMethod(method));
+                    }
+
+                });
+
+
+        // Put Mapping
+        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PutMapping.class))
+                .forEach(method -> {
+                    method.setAccessible(true);
+                    put(method.getAnnotation(PutMapping.class).path(), routeMethod(method));
+                });
+
+        // Delete Mapping
+        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(DeleteMapping.class))
+                .forEach(method -> {
+                    method.setAccessible(true);
+                    delete(method.getAnnotation(PutMapping.class).path(), routeMethod(method));
+                });
+
     }
 
     /**
@@ -518,17 +323,6 @@ public abstract class Controller {
         ((Model) getSharedModel().get(NAV_MODEL_NAME)).set(getShortName(), "");
         // Binds navigation #href links according to the controller's view.
         ((Model) getSharedModel().get(ENDPOINTS_MODEL_NAME)).set(getShortName(), getEndPoint());
-    }
-
-    /**
-     * Extracted method for responding 501.
-     * 
-     * @param response the http response object
-     * @return an unimplemented method
-     */
-    private Object unImplementedMethod(Response response) {
-        response.status(501);
-        return response;
     }
 
     /**
@@ -548,5 +342,26 @@ public abstract class Controller {
     protected void updateNavigationModel(String currentView) {
         ((Model) getSharedModel().get(NAV_MODEL_NAME))
                 .replaceAll((k, v) -> v = k.equals(currentView) ? "active" : "");
+    }
+
+    /**
+     * Gets a Spark route from a method.
+     * 
+     * @param method to be routed
+     * @return a Spark Java endpoint
+     */
+    private Route routeMethod(Method method) {
+        return (request, response) -> method.invoke(this, request, response);
+    }
+
+
+    /**
+     * Gets a Spartk Template View Route from a method.
+     * 
+     * @param method to be tempalted-view routed.
+     * @return a Spark Java view endpoint
+     */
+    private TemplateViewRoute routeViewMethod(Method method) {
+        return (request, response) -> (ModelAndView) method.invoke(this, request, response);
     }
 }

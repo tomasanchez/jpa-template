@@ -2,6 +2,8 @@ package com.jpa.controller;
 
 import java.util.Objects;
 import com.jpa.core.mvc.controller.ControllerInitialization;
+import com.jpa.core.mvc.controller.routing.GetMapping;
+import com.jpa.core.mvc.controller.routing.PostMapping;
 import com.jpa.model.user.User;
 import com.jpa.repositories.UserRepository;
 import spark.ModelAndView;
@@ -20,7 +22,6 @@ public class LogInController extends BaseController {
     protected ControllerInitialization getInitialization() {
         return ControllerInitialization.GET_POST;
     }
-
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
@@ -48,7 +49,12 @@ public class LogInController extends BaseController {
     /* Request Handling ------------------------------------------ */
     /* =========================================================== */
 
-    @Override
+    @GetMapping(path = "/login")
+    private ModelAndView loginPage(Request request, Response response) {
+        return getModelAndView();
+    }
+
+    @PostMapping(path = "/login")
     protected ModelAndView onPost(Request request, Response response) {
 
         if (Objects.isNull(request.queryParams("uid"))) {
@@ -57,10 +63,8 @@ public class LogInController extends BaseController {
             onLogOut(request, response);
         }
 
-        return super.onPost(request, response);
+        return getModelAndView();
     }
-
-
 
     /* =========================================================== */
     /* Event Handlers -------------------------------------------- */

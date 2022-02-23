@@ -1,7 +1,6 @@
 package com.jpa.controller;
 
 import static spark.Spark.halt;
-
 import java.util.Map;
 import java.util.Objects;
 import com.jpa.core.mvc.controller.Controller;
@@ -70,6 +69,18 @@ public abstract class BaseController extends Controller
         response.redirect(Objects.isNull(c) ? "/".concat(location) : c.getEndPoint());
 
     }
+
+    /**
+     * Extracted method for responding 501.
+     * 
+     * @param response the http response object
+     * @return an unimplemented method
+     */
+    protected Object unImplementedMethod(Response response) {
+        response.status(501);
+        return response;
+    }
+
     /* =========================================================== */
     /* Authentification ------------------------------------------ */
     /* =========================================================== */
