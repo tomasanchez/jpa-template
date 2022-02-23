@@ -1,7 +1,6 @@
 package com.jpa.controller;
 
 import java.util.Objects;
-import com.jpa.core.mvc.controller.ControllerInitialization;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
 import com.jpa.model.user.User;
@@ -13,15 +12,6 @@ import spark.Response;
 public class LogInController extends BaseController {
 
     private UserRepository usersRepository = new UserRepository();
-
-    /* =========================================================== */
-    /* Overridables ---------------------------------------------- */
-    /* =========================================================== */
-
-    @Override
-    protected ControllerInitialization getInitialization() {
-        return ControllerInitialization.GET_POST;
-    }
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */

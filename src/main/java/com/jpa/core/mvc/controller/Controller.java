@@ -35,7 +35,6 @@ public abstract class Controller {
     private static final String NAV_MODEL_NAME = "nav";
     private static Model sharedModel;
     private static TemplateEngine engine;
-    private static ControllerInitialization DEF_INIT = ControllerInitialization.ONLY_GET;
     private static ResourceBundle i18n = new ResourceBundle();
     private View view;
 
@@ -61,16 +60,6 @@ public abstract class Controller {
                 .set("i18n", new Model(getI18n().getProperties()));
     }
 
-    /**
-     * Override this method to change initilialization.
-     * 
-     * <br>
-     * 
-     * @return the controller initilialization
-     */
-    protected ControllerInitialization getInitialization() {
-        return DEF_INIT;
-    }
 
     /* =========================================================== */
     /* Getters & Setter ------------------------------------------ */
