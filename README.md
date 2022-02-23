@@ -40,26 +40,67 @@ There is no need for you to worry about the `core` package, _it just works_. Mod
 
 The **`Controller`** class is a generic implementation. Your controllers must inherit this class. By default all controllers are set to the path `/controllername` with the method [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), and if a [`TemplateEngine`]((https://sparkjava.com/documentation#views-and-templates)) is set, it executes a _method_ that responses with a [`ModelAndView`](https://sparkjava.com/documentation#views-and-templates).
 
-`Controller` has multiple initialization methods, which will initialize different [`routes`](https://sparkjava.com/documentation#routes), by default only `GET`. you can `@Override` this by _overriding_ the method [`getInitialization()`]() like, for example in [`LoginController`](https://github.com/tomasanchez/jpa-template/blob/356169760683433c137132d0bbe7ebaecf7cad40/src/main/java/com/jpa/controller/LogInController.java#L19-L22), the `ControllerInitialization` availables are:
-
-- `FULL_CRUD`, which inits all the methods `GET`, `POST`, `PUT/PATCH` and `DELETE`. And also provides a `GET /path/new` for a View destinated to create a resource.
-- `CRUD_NOT_ENGINE`, same as above but whithout returning a `ModelAndView`.
-- `GET_POST`, only `GET` and `POST`
-- `FULL_GET_POST`, also includes `GET /path/:id` and `POST /path/:id`
-- `GET_POST_DELETE` also includes DELETE.
-- `ONLY_GET`
-
 <br></br>
 
-**IMPORTANT** when overriding this, you should also override the corresponding methods:
+**Endpoints**
 
-- Methods that returns `ModelAndView`.
-    - `onPost(request, response)`
-- Methods that return any other `Object` (No `TemplateEngine`)
-    - `onGetResponse(request, response)`
-    - `onPostResponse(request, response)` 
-    - `onDeleteResponse(request, response)`
-    - `onPutResponse(request, response)`
+To set up and endpoint, there are annotations provided to simplify this.
+
+Suppose you want to display a `HomePage`, having a controller:
+
+```java
+public class HomeController extends Controller {
+
+    /* =========================================================== */
+    /* Lifecycle methods ----------------------------------------- */
+    /* =========================================================== */
+
+    @Override
+    protected void onInit() {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    protected void onBeforeRendering(Request request, Response response) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    protected void onAfterRendering(Request request, Response response) {
+        // TODO Auto-generated method stub
+
+    }
+
+}
+```
+
+When extending the `Controller` class you will need to define the `lifecycle` methods, which we will talk about later. Now ignore this, just know that you must only provide the override definition, as no behaviour is really needed.
+
+If you want to display a web-page, you first need a [`HandleBars`](https://handlebarsjs.com/guide/) file which name should be `<ControllerName>.html.hbs` for this case: `HomeController` must have `Home.html.hbs` in the directory `resources/templates`. 
+
+Then to set up the endpoint you must use the provided annotations as shown bellow:
+
+```java
+public class HomeController extends Controller {
+
+    /* =========================================================== */
+    /* HTTP Request methods -------------------------------------- */
+    /* =========================================================== */
+
+    @GetMapping(path="/home")
+    public ModelAndView showHomePage(Request request, Response response){
+        return getModelAndView();
+    }
+
+}
+```
+
+The method `getModelAndView()` is provided in the Controller superclass, this method will retrieve the handlebars' file. You do not need to modify anything, as long as you **respect the naming standard**.
+
+The `@GetMapping` will map GET request to the specified path, there is also an additional parameter: engine which by default will be _true_: this determines wether a web page should be responded, or not. When _true_, function should return a `ModelAndView`, when _false_ it  is recommended to return a string (JSON).
+
+The same rule applies to `@PostMapping`. However, `@DeleteMapping` and `@PutMapping` do not use the engine logic, both should return a JSON.
 
 <br></br>
 
@@ -84,6 +125,7 @@ The **`View`** class provides a layer of abstraction, representing the logic beh
 The `Model` is another abstraction, in this case of a `Map<String, Object>`, providing convenience methods such as instantiation via `JSON` or `Properies` _file_. Model also provides fluent setter for properties, and can be joined with other models (puts one map into another).
 
 **Note**: Each `View` has a `Model` instance. In addition a `Model` can contain another `Model` within. As a `Controller` has a `View` which contains a `ViewModel`, controllers will have different `Model` instances, however there is a shared `Model` among them.
+
 
 
 ![View Example](./assets/view-snippet.svg)
@@ -134,16 +176,11 @@ The seed provides you with a `PersistentEntity` class which can be extended by y
 public abstract class PersistentEntity implements Serializable {
 
     @Id
-    @GeneratedValue
-    private long id;
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
 }
 ```
 
