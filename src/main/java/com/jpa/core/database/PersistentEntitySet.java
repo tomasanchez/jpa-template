@@ -55,7 +55,7 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @return entity or null.
      */
     @SuppressWarnings("unchecked")
-    public T getEntity(long id) {
+    public T getEntity(String id) {
 
         try {
             return (T) entityManager()
@@ -82,7 +82,7 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @param id the entity's unique id
      * @return the updated entity
      */
-    public T updateEntity(Long id) {
+    public T updateEntity(String id) {
         return updateEntity(getEntity(id));
     }
 
@@ -100,7 +100,7 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * 
      * @param id the entity unique id
      */
-    public void deleteEntity(Long id) {
+    public void deleteEntity(String id) {
         deleteEntity(getEntity(id));
     }
 }
