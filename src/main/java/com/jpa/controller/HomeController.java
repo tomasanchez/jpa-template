@@ -12,7 +12,7 @@ public class HomeController extends BaseController {
     /* =========================================================== */
 
     @Override
-    public String getEndPoint(Boolean useId) {
+    public String getEndPoint() {
         return "/";
     }
 
@@ -46,7 +46,7 @@ public class HomeController extends BaseController {
     /* ===================== */
 
 
-    @GetMapping(path = "/")
+    @GetMapping
     protected ModelAndView getHome(Request request, Response response) {
         return getModelAndView();
     }

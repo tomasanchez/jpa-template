@@ -157,23 +157,7 @@ public abstract class Controller {
      * @return the endpoint controlled
      */
     public String getEndPoint() {
-        return getEndPoint(false);
-    }
-
-    /**
-     * Retrieves the controller endpoint URL.
-     * 
-     * <br>
-     * </br>
-     * 
-     * ? Example: HomeController => /home/:id (when using id)
-     * 
-     * @param useId if use id path
-     * @return the endpoint controlled
-     */
-    public String getEndPoint(Boolean useId) {
-        return useId ? "/".concat(getName()).concat("/:id").toLowerCase()
-                : "/".concat(getName()).toLowerCase();
+        return "/".concat(getName()).toLowerCase();
     }
 
     /**
@@ -260,7 +244,8 @@ public abstract class Controller {
 
                     method.setAccessible(true);
                     boolean useEngine = method.getAnnotation(GetMapping.class).engine();
-                    String path = method.getAnnotation(GetMapping.class).path();
+                    String path =
+                            createEndpointForPath(method.getAnnotation(GetMapping.class).path());
 
                     if (useEngine) {
                         get(path, routeViewMethod(method), getEngine());
@@ -273,10 +258,11 @@ public abstract class Controller {
         // Post Mapping
         Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PostMapping.class))
                 .forEach(method -> {
-
                     method.setAccessible(true);
+
                     boolean useEngine = method.getAnnotation(PostMapping.class).engine();
-                    String path = method.getAnnotation(PostMapping.class).path();
+                    String path =
+                            createEndpointForPath(method.getAnnotation(PostMapping.class).path());
 
                     if (useEngine) {
                         post(path, routeViewMethod(method), getEngine());
@@ -291,17 +277,20 @@ public abstract class Controller {
         Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PutMapping.class))
                 .forEach(method -> {
                     method.setAccessible(true);
-                    put(method.getAnnotation(PutMapping.class).path(), routeMethod(method));
+                    put(createEndpointForPath(method.getAnnotation(PutMapping.class).path()),
+                            routeMethod(method));
                 });
 
         // Delete Mapping
         Arrays.stream(methods).filter(m -> m.isAnnotationPresent(DeleteMapping.class))
                 .forEach(method -> {
                     method.setAccessible(true);
-                    delete(method.getAnnotation(PutMapping.class).path(), routeMethod(method));
+                    delete(createEndpointForPath(method.getAnnotation(DeleteMapping.class).path()),
+                            routeMethod(method));
                 });
 
     }
+
 
     /**
      * Shares essential data for the application view model.
@@ -353,4 +342,22 @@ public abstract class Controller {
     private TemplateViewRoute routeViewMethod(Method method) {
         return (request, response) -> (ModelAndView) method.invoke(this, request, response);
     }
+
+    /**
+     * Generates and endpoint for the specified path.
+     * 
+     * @param path a path to use in the endpoint of a controller
+     * @return the route with the final endpoint
+     */
+    private String createEndpointForPath(String path) {
+
+        if (getEndPoint().equals(path)) {
+            return path;
+        }
+
+        path = path.startsWith("/") || path.isEmpty() ? getEndPoint().concat(path)
+                : String.format("%s/%s", getEndPoint(), path);
+        return path;
+    }
+
 }

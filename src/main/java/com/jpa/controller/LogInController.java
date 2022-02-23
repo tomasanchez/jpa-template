@@ -39,12 +39,12 @@ public class LogInController extends BaseController {
     /* Request Handling ------------------------------------------ */
     /* =========================================================== */
 
-    @GetMapping(path = "/login")
+    @GetMapping
     private ModelAndView loginPage(Request request, Response response) {
         return getModelAndView();
     }
 
-    @PostMapping(path = "/login")
+    @PostMapping
     protected ModelAndView onPost(Request request, Response response) {
 
         if (Objects.isNull(request.queryParams("uid"))) {

@@ -18,7 +18,7 @@ public @interface GetMapping {
      * The path of the endpoint.
      * 
      */
-    String path() default "/";
+    String path() default "";
 
     /**
      * Wether a Template engine should be used or not.

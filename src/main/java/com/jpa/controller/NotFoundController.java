@@ -13,7 +13,7 @@ public class NotFoundController extends Controller {
     /* =========================================================== */
 
     @Override
-    public String getEndPoint(Boolean useId) {
+    public String getEndPoint() {
         return "*";
     }
 
