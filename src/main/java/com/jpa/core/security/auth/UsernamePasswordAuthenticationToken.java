@@ -15,10 +15,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class UsernamePasswordAuthenticationToken implements Authentication {
 
-    private final Collection<GrantedAuthority> authorities;
     private final Object principal;
     private Object credentials;
     private boolean isAuthenticated;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     /**
      * Safe constructor as the {@link #isAuthenticated()} will return <code>false</code>

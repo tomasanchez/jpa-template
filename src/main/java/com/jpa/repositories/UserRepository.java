@@ -1,10 +1,28 @@
 package com.jpa.repositories;
 
+import java.util.Optional;
 import javax.persistence.NoResultException;
 import com.jpa.core.database.PersistentEntitySet;
 import com.jpa.model.user.User;
 
 public class UserRepository extends PersistentEntitySet<User> {
+
+    /**
+     * Obtains an user from database that matches unique username.
+     * 
+     * @param username to match
+     * @return An authenticated user
+     */
+    public Optional<User> findByUsername(String username) {
+        try {
+            return Optional.ofNullable((User) entityManager()
+                    .createQuery(
+                            String.format("FROM %s U WHERE U.uname LIKE :username", getTableName()))
+                    .setParameter("uname", username).getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.of(null);
+        }
+    }
 
     /**
      * Obtains an user from database that matches the given username and password.
@@ -13,6 +31,7 @@ public class UserRepository extends PersistentEntitySet<User> {
      * @param password to validate
      * @return An authenticated user
      */
+    @Deprecated
     public User getEntity(String username, String password) {
         try {
             return (User) entityManager()
