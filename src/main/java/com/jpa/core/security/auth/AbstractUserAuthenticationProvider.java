@@ -1,5 +1,7 @@
 package com.jpa.core.security.auth;
 
+import javax.persistence.EntityNotFoundException;
+import com.jpa.core.security.auth.exception.BadCredentialsException;
 import com.jpa.core.security.crypto.PasswordEncoder;
 import com.jpa.core.security.userdetails.UserDetails;
 import com.jpa.core.security.userdetails.UserDetailsService;
@@ -12,7 +14,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class AbstractUserAuthenticationProvider {
+public abstract class AbstractUserAuthenticationProvider implements AuthenticationManager {
 
     private PasswordEncoder passwordEncoder;
     private UserDetailsService userDetailsService;
@@ -37,4 +39,30 @@ public abstract class AbstractUserAuthenticationProvider {
      */
     protected abstract Authentication createSuccessAuthentication(Object principal,
             Authentication authentication, UserDetails user);
+
+    @Override
+    public Authentication authenticate(Authentication authentication) {
+
+        String username = determineUsername(authentication);
+        String credentials = (String) authentication.getCredentials();
+        UserDetails user = null;
+
+        try {
+            user = retrieveUser(username, authentication);
+        } catch (EntityNotFoundException ex) {
+            throw new BadCredentialsException(
+                    String.format("Username '%s' does not exists", username));
+        }
+
+        if (!getPasswordEncoder().matches(credentials, user.getPassword())) {
+            throw new BadCredentialsException("Password does not match");
+        }
+
+        return createSuccessAuthentication(authentication.getPrincipal(), authentication, user);
+    }
+
+
+    private String determineUsername(Authentication authentication) {
+        return (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
+    }
 }
