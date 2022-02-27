@@ -41,7 +41,7 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
     void userShouldBeRetrieved() {
         repository.createEntity(user);
         entityManager().flush();
-        assertEquals(user.getId(), repository.getEntity(user.getId()).getId());
+        assertEquals(user.getId(), repository.getEntity(user.getId()).orElse(new User()).getId());
     }
 
     @Test
@@ -58,7 +58,7 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
         user.setUname(newUname);
         repository.updateEntity(user);
         entityManager().flush();
-        assertEquals(newUname, repository.getEntity(user.getId()).getUname());
+        assertEquals(newUname, repository.getEntity(user.getId()).orElse(new User()).getUname());
     }
 
     @Test
