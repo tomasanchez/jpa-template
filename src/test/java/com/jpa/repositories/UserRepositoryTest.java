@@ -3,6 +3,8 @@ package com.jpa.repositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import javax.persistence.EntityNotFoundException;
 import com.jpa.model.user.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,8 +47,8 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
     }
 
     @Test
-    void userShouldBeNullWhenIdDoesNotExists() {
-        assertNull(repository.getEntity("-1L"));
+    void whenUnexistentID_then_throwsEntityNotFound() {
+        assertThrows(EntityNotFoundException.class, () -> assertNull(repository.getEntity("-1L")));
     }
 
 

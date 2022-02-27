@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.NoResultException;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 
 /**
@@ -55,9 +56,14 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      */
     @SuppressWarnings("unchecked")
     public Optional<T> getEntity(String id) {
-        return Optional.of(
-                (T) entityManager().createQuery("FROM " + getTableName() + " T WHERE T.id LIKE :id")
-                        .setParameter("id", id).getSingleResult());
+
+        try {
+            return Optional.of((T) entityManager()
+                    .createQuery("FROM " + getTableName() + " T WHERE T.id LIKE :id")
+                    .setParameter("id", id).getSingleResult());
+        } catch (NoResultException nre) {
+            throw new EntityNotFoundException(nre.getMessage());
+        }
 
     }
 
