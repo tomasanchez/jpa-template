@@ -2,10 +2,9 @@ package com.jpa.core.database;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
-
+import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.NoResultException;
-
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 
 /**
@@ -55,15 +54,11 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @return entity or null.
      */
     @SuppressWarnings("unchecked")
-    public T getEntity(String id) {
+    public Optional<T> getEntity(String id) {
+        return Optional.of(
+                (T) entityManager().createQuery("FROM " + getTableName() + " T WHERE T.id LIKE :id")
+                        .setParameter("id", id).getSingleResult());
 
-        try {
-            return (T) entityManager()
-                    .createQuery("FROM " + getTableName() + " T WHERE T.id LIKE :id")
-                    .setParameter("id", id).getSingleResult();
-        } catch (NoResultException exception) {
-            return null;
-        }
     }
 
     /**
@@ -83,7 +78,7 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @return the updated entity
      */
     public T updateEntity(String id) {
-        return updateEntity(getEntity(id));
+        return updateEntity(getEntity(id).orElseThrow(EntityNotFoundException::new));
     }
 
     /**
@@ -101,6 +96,6 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @param id the entity unique id
      */
     public void deleteEntity(String id) {
-        deleteEntity(getEntity(id));
+        deleteEntity(getEntity(id).orElseThrow(EntityNotFoundException::new));
     }
 }

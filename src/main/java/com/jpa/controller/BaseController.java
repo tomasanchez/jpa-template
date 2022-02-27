@@ -100,8 +100,8 @@ public abstract class BaseController extends Controller
      * @return the user updated.
      */
     protected User onRefreshUser() {
-        User refreshed =
-                new UserRepository().getEntity(((User) getSharedModel().get("user")).getId());
+        User refreshed = new UserRepository()
+                .getEntity(((User) getSharedModel().get("user")).getId()).orElse(null);
         getSharedModel().set("user", refreshed);
         return refreshed;
     }
