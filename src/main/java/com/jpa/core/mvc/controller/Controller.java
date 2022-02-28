@@ -15,10 +15,12 @@ import com.jpa.core.mvc.controller.routing.PostMapping;
 import com.jpa.core.mvc.controller.routing.PutMapping;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
+import com.jpa.core.utils.JsonTransformer;
 import com.jpa.i18n.ResourceBundle;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
+import spark.ResponseTransformer;
 import spark.Route;
 import spark.TemplateEngine;
 import spark.TemplateViewRoute;
@@ -36,6 +38,7 @@ public abstract class Controller {
     private static Model sharedModel;
     private static TemplateEngine engine;
     private static ResourceBundle i18n = new ResourceBundle();
+    private static ResponseTransformer jsonTransformer = new JsonTransformer();
     private View view;
 
     /* =========================================================== */
@@ -105,6 +108,24 @@ public abstract class Controller {
 
     public static ResourceBundle getI18n() {
         return i18n;
+    }
+
+    /**
+     * Retrieves the current JSON transformer.
+     * 
+     * @return the JSON response transformer
+     */
+    public static ResponseTransformer getJsonTransformer() {
+        return jsonTransformer;
+    }
+
+    /**
+     * Sets a JSON response transformer to be used by the controllers.
+     * 
+     * @param responseTransformer the JSON response transformer.
+     */
+    public static void setJsonTransformer(ResponseTransformer responseTransformer) {
+        jsonTransformer = responseTransformer;
     }
 
     /**
@@ -250,7 +271,7 @@ public abstract class Controller {
                     if (useEngine) {
                         get(path, routeViewMethod(method), getEngine());
                     } else {
-                        get(path, routeMethod(method));
+                        get(path, routeMethod(method), getJsonTransformer());
                     }
 
                 });
@@ -267,7 +288,7 @@ public abstract class Controller {
                     if (useEngine) {
                         post(path, routeViewMethod(method), getEngine());
                     } else {
-                        post(path, routeMethod(method));
+                        post(path, routeMethod(method), getJsonTransformer());
                     }
 
                 });
@@ -278,7 +299,7 @@ public abstract class Controller {
                 .forEach(method -> {
                     method.setAccessible(true);
                     put(createEndpointForPath(method.getAnnotation(PutMapping.class).path()),
-                            routeMethod(method));
+                            routeMethod(method), getJsonTransformer());
                 });
 
         // Delete Mapping
@@ -286,7 +307,7 @@ public abstract class Controller {
                 .forEach(method -> {
                     method.setAccessible(true);
                     delete(createEndpointForPath(method.getAnnotation(DeleteMapping.class).path()),
-                            routeMethod(method));
+                            routeMethod(method), getJsonTransformer());
                 });
 
     }
