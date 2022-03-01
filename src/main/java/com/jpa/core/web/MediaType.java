@@ -1,4 +1,4 @@
-package com.jpa.core.utils;
+package com.jpa.core.web;
 
 public class MediaType {
 
