@@ -25,13 +25,20 @@ public class JwtMapper {
 
     private static final String ROLES_KEY = "roles";
 
+    private static final String TOKEN_DEFAULT_SECRET = "secret";
+
     /**
      * Generally a bearer token uses the prefix BEARER.
      */
     private static final String TOKEN_BEARER_PREFIX = "";
 
     private Algorithm algorithm;
+
     private JWTVerifier verifier;
+
+    public JwtMapper() {
+        this(TOKEN_DEFAULT_SECRET);
+    }
 
     public JwtMapper(String tokenSecret) {
         algorithm = Algorithm.HMAC256(tokenSecret.getBytes());
