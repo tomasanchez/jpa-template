@@ -20,7 +20,7 @@ public class UserRepository extends PersistentEntitySet<User> {
                             String.format("FROM %s U WHERE U.uname LIKE :username", getTableName()))
                     .setParameter("uname", username).getSingleResult());
         } catch (NoResultException e) {
-            return Optional.of(null);
+            return Optional.empty();
         }
     }
 
