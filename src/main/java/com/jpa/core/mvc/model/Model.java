@@ -5,7 +5,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * A model implementation for the TS-JPA Model-View-Controller concept.
@@ -37,8 +38,14 @@ public class Model {
      */
     @SuppressWarnings("unchecked")
     public Model(String json) {
-        Gson gson = new Gson();
-        model = gson.fromJson(json, Map.class);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            model = objectMapper.readValue(json, model.getClass());
+        } catch (JsonProcessingException e) {
+            model = new HashMap<>();
+        }
     }
 
     /* =========================================================== */
