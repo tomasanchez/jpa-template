@@ -1,6 +1,5 @@
 package com.jpa.core.services;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -101,22 +100,13 @@ public class ControllerLoaderService {
 
                     this.controllers = classes.stream()
                             .filter(c -> !Modifier.isAbstract(c.getModifiers())).map(c -> {
-                                Controller controller = null;
+                                Controller controller;
                                 try {
                                     controller = c.getDeclaredConstructor().newInstance();
                                     System.out.println("Controller ".concat(controller.getName())
                                             .concat(" initializes!"));
-                                } catch (InstantiationException e) {
-                                    e.printStackTrace();
-                                } catch (IllegalAccessException e) {
-                                    e.printStackTrace();
-                                } catch (IllegalArgumentException e) {
-                                    e.printStackTrace();
-                                } catch (InvocationTargetException e) {
-                                    e.printStackTrace();
-                                } catch (NoSuchMethodException e) {
-                                    e.printStackTrace();
-                                } catch (SecurityException e) {
+                                } catch (Exception e) {
+                                    controller = null;
                                     e.printStackTrace();
                                 }
                                 return controller;
