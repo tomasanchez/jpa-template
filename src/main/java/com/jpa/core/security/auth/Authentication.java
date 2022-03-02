@@ -47,4 +47,12 @@ public interface Authentication extends Principal, Serializable {
      * @return true if the token has been authenticated
      */
     boolean isAuthenticated();
+
+    /**
+     * 
+     * @param isAuthenticated <code>true</code> if the token should be trusted (which may result in
+     *        an exception) or <code>false</code> if the token should not be trusted
+     * 
+     */
+    void setAuthenticated(boolean isAuthenticated);
 }
