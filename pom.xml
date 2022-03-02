@@ -26,7 +26,11 @@
       <version>1.0-alpha-1</version>
     </dependency>
     <!-- End of JPA -->
-
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>1.7.21</version>
+    </dependency>
 
     <!-- BEGIN OF TESTING DEPENDENCIES -->
     <!-- JUNIT Jupiter-->
