@@ -21,7 +21,7 @@ public class SimpleAuthenticationProvider extends AbstractUserAuthenticationProv
             Authentication authentication, UserDetails user) {
         String password = authentication.getCredentials().toString();
         String encodedPassword = getPasswordEncoder().encode(password);
-        return new UsernamePasswordAuthenticationToken(principal, encodedPassword, false,
+        return new UsernamePasswordAuthenticationToken(user, encodedPassword, true,
                 user.getAuthorities());
     }
 
