@@ -185,13 +185,12 @@ public abstract class PersistentEntity implements Serializable {
 ```
 
 
-In addition, there is a `PersistentEntitySet<T>` generic class, which allows you to easily create `CRUD Repositories`.
+In addition, there is a `PersistentEntitySet<T>` generic superclass, which allows you to easily create `CRUD Repositories`, as you **DO NOT NEED** to implement them yourself. However, for better performance or special use cases, it is recommended to override them.
 
 The interface provided:
 
 ```java
-@MappedSuperclass
-public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager {
+public abstract class PersistentEntitySet<T extends PersistentEntity> implements WithGlobalEntityManager {
 
     /**
      * Retrieves Table name (class name).
@@ -224,7 +223,7 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
      * @param id the entity unique id
      * @return entity or null.
      */
-    public T getEntity(long id);
+    public Optional<T> getEntity(long id);
 
     /**
      * Updates the database with the entity.
@@ -265,14 +264,16 @@ See this case of `UserRepository`
 ```java
 public class UserRepository extends PersistentEntitySet<User> {
 
+    // No need to implement the aforementioned PersistentEntitySet methods. nor override them.
+
     /**
      * Obtains an user from database that matches the given username and password.
      * 
      * @param username to match
      * @param password to validate
-     * @return An authenticated user
+     * @return A user (yet to be authenthicated)
      */
-    public User getEntity(String username, String password);
+    public Optional<User> findByUsernameAndPassword(String username, String password);
 }
 ```
 
