@@ -1,26 +1,28 @@
 package com.jpa.controller;
 
 import java.util.Objects;
+import com.jpa.config.SecurityConfig;
+import com.jpa.core.config.WebSecurityConfig;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
-import com.jpa.model.user.User;
-import com.jpa.repositories.UserRepository;
+import com.jpa.security.services.JwtSessionAuthenticationService;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 
 public class LogInController extends BaseController {
 
-    private UserRepository usersRepository = new UserRepository();
+    private WebSecurityConfig wsc = SecurityConfig.getInstance();
+
+    private JwtSessionAuthenticationService authService =
+            new JwtSessionAuthenticationService(wsc.getAuthenticationManager());
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
     /* =========================================================== */
 
     @Override
-    protected void onInit() {
-        // TODO Auto-generated method stub
-    }
+    protected void onInit() {}
 
     @Override
     protected void onBeforeRendering(Request request, Response response) {
@@ -68,27 +70,9 @@ public class LogInController extends BaseController {
      */
     private void onLogIn(Request request, Response response) {
 
-        String username = request.queryParams("user");
-        String password = request.queryParams("password");
+        authService.attemptAuthentication(request, response, this::onSuccessfulAuthentication,
+                this::onUnsuccessfulAuthenticaiton);
 
-        if (Objects.isNull(username) || Objects.isNull(password)) {
-            response.status(400);
-            return;
-        }
-
-        User user = usersRepository.getEntity(username, password);
-
-        onAuthenticate(user);
-
-        if (!isLogged()) {
-            getView().getModel().set("isValid", "is-invalid").set("username", username);
-            response.status(400);
-            return;
-        }
-
-        request.session().attribute("uid", user.getId());
-        response.status(200);
-        navTo(response, "home");
     }
 
     /**
@@ -99,9 +83,18 @@ public class LogInController extends BaseController {
      */
     private void onLogOut(Request request, Response response) {
         onAuthenticate(null);
-        request.session().removeAttribute("uid");
+        request.session().invalidate();
         navTo(response, "home");
     }
 
+
+    private void onSuccessfulAuthentication(Request request, Response response) {
+        navTo(response, "home");
+    }
+
+    private void onUnsuccessfulAuthenticaiton(Request request, Response response) {
+        String username = request.queryParams("user");
+        getView().getModel().set("isValid", "is-invalid").set("username", username);
+    }
 
 }
