@@ -4,14 +4,12 @@ import java.lang.reflect.ParameterizedType;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.MappedSuperclass;
 import javax.persistence.NoResultException;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 
 /**
  * Convenience Class for creating Repository.
  */
-@MappedSuperclass
 public abstract class PersistentEntitySet<T extends PersistentEntity>
         implements WithGlobalEntityManager {
 
