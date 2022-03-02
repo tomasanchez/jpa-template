@@ -85,21 +85,4 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
         assertEquals(previousSize + 2, repository.getEntitySet().size());
     }
 
-
-    @Test
-    void userIsRetrievedWithCredentials() {
-        repository.createEntity(user);
-        entityManager().flush();
-        assertEquals(user.getId(),
-                repository.getEntity(user.getUname(), user.getPassword()).getId());
-    }
-
-    @Test
-    void userIsNullWhenCredentialsAreInvalid() {
-        repository.createEntity(user);
-        entityManager().flush();
-        assertNull(repository.getEntity(user.getUname(), user.getPassword().toUpperCase()));
-    }
-
-
 }
