@@ -18,7 +18,7 @@ public class UserRepository extends PersistentEntitySet<User> {
             return Optional.ofNullable((User) entityManager()
                     .createQuery(
                             String.format("FROM %s U WHERE U.uname LIKE :username", getTableName()))
-                    .setParameter("uname", username).getSingleResult());
+                    .setParameter("username", username).getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         }
