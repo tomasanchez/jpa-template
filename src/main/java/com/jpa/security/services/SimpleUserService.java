@@ -7,13 +7,15 @@ import com.jpa.core.security.userdetails.UserDetailsService;
 import com.jpa.model.user.User;
 import com.jpa.repositories.UserRepository;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class SimpleUserService implements UserDetailsService {
 
-    private UserRepository usersRepository;
+    private UserRepository usersRepository = new UserRepository();
 
     @Override
     public UserDetails loadUserByUsername(String username) throws EntityNotFoundException {
