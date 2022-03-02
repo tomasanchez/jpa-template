@@ -15,9 +15,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class UsernamePasswordAuthenticationToken implements Authentication {
 
+    private static final long serialVersionUID = 1L;
+
     private final Object principal;
+
     private Object credentials;
+
     private boolean isAuthenticated;
+
     private final Collection<? extends GrantedAuthority> authorities;
 
     /**

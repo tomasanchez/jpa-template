@@ -12,6 +12,13 @@ import com.jpa.core.security.userdetails.GrantedAuthority;
 public interface Authentication extends Principal, Serializable {
 
     /**
+     * The atuthentication key value text.
+     */
+    public static final String AUTHENTICATION_KEY = "credentials";
+
+    public static final String AUTHENTICATION_TOKEN_KEY = "jwt";
+
+    /**
      * Indicates the authorities that the principal has been granted.
      * 
      * @return the authorities granted to the principal or an empty collection.
