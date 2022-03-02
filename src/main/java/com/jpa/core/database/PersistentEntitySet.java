@@ -12,12 +12,16 @@ import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
  * Convenience Class for creating Repository.
  */
 @MappedSuperclass
-public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager {
+public abstract class PersistentEntitySet<T extends PersistentEntity>
+        implements WithGlobalEntityManager {
 
     /**
      * Retrieves Table name (class name).
      * 
-     * ? Example: PersistentEntitySet<User> => Table name is User
+     * <br>
+     * </br>
+     * 
+     * ? Example: PersistentEntitySet of User.class => Table name is User
      * 
      * @return the table name
      */
@@ -59,10 +63,12 @@ public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager 
 
         try {
             return Optional.of((T) entityManager()
-                    .createQuery("FROM " + getTableName() + " T WHERE T.id LIKE :id")
+                    .createQuery(String.format("FROM %s T WHERE T.id LIKE :id", getTableName()))
                     .setParameter("id", id).getSingleResult());
         } catch (NoResultException nre) {
             throw new EntityNotFoundException(nre.getMessage());
+        } catch (Exception e) {
+            return Optional.empty();
         }
 
     }
