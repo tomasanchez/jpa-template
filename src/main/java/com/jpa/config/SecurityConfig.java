@@ -1,6 +1,7 @@
 package com.jpa.config;
 
 import com.jpa.core.config.WebSecurityConfig;
+import com.jpa.core.mvc.controller.Controller;
 import com.jpa.core.security.auth.AuthenticationManager;
 import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.crypto.BCryptPasswordEncoder;
@@ -28,27 +29,20 @@ public final class SecurityConfig implements WebSecurityConfig {
     private static SecurityConfig instance;
 
     public static SecurityConfig getInstance() {
-
         if (instance == null) {
-            instance = new SecurityConfig();
-            try {
-                instance.configure();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            configure();
         }
-
         return instance;
     }
 
     private SecurityConfig() {}
 
 
-    @Override
-    public void configure() throws Exception {
+    public static void configure() {
         instance = new SecurityConfig();
         instance.setUserDetailsService(new SimpleUserService());
         instance.setAuthenticationManager(instance.authProvider());
+        Controller.setWebSecurityConfig(instance);
     }
 
     @Override

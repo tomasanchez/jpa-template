@@ -4,7 +4,7 @@ import com.jpa.core.security.auth.AuthenticationManager;
 import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.crypto.PasswordEncoder;
 
-public interface WebSecurityConfig extends Configuration {
+public interface WebSecurityConfig {
 
     /**
      * Indicates the Authentication Manager used.
