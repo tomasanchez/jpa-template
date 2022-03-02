@@ -2,17 +2,15 @@ package com.jpa.core.mvc.controller;
 
 import static spark.Spark.after;
 import static spark.Spark.before;
-import static spark.Spark.delete;
-import static spark.Spark.get;
-import static spark.Spark.post;
-import static spark.Spark.put;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Map;
+import com.jpa.core.config.WebSecurityConfig;
 import com.jpa.core.mvc.controller.routing.DeleteMapping;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
 import com.jpa.core.mvc.controller.routing.PutMapping;
+import com.jpa.core.mvc.controller.routing.RoutingFactory;
+import com.jpa.core.mvc.controller.routing.RoutingFactoryBuilder;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
 import com.jpa.core.utils.JsonTransformer;
@@ -21,9 +19,7 @@ import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.ResponseTransformer;
-import spark.Route;
 import spark.TemplateEngine;
-import spark.TemplateViewRoute;
 
 /**
  * A generic controller implementation for the TS-JPA Model-View-Controller concept.
@@ -39,6 +35,7 @@ public abstract class Controller {
     private static TemplateEngine engine;
     private static ResourceBundle i18n = new ResourceBundle();
     private static ResponseTransformer jsonTransformer = new JsonTransformer();
+    private static WebSecurityConfig webSecurityConfig;
     private View view;
 
     /* =========================================================== */
@@ -126,6 +123,19 @@ public abstract class Controller {
      */
     public static void setJsonTransformer(ResponseTransformer responseTransformer) {
         jsonTransformer = responseTransformer;
+    }
+
+    /**
+     * Sets the Web Security Configuration to be used by the controllers.
+     * 
+     * @param wsc a Web Security Configuration to be used
+     */
+    public static void setWebSecurityConfig(WebSecurityConfig wsc) {
+        webSecurityConfig = wsc;
+    }
+
+    protected static WebSecurityConfig getWebSecurityConfig() {
+        return webSecurityConfig;
     }
 
     /**
@@ -259,56 +269,23 @@ public abstract class Controller {
 
         Method[] methods = getClass().getDeclaredMethods();
 
-        // Get Mapping
-        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(GetMapping.class))
-                .forEach(method -> {
 
-                    method.setAccessible(true);
-                    boolean useEngine = method.getAnnotation(GetMapping.class).engine();
-                    String path =
-                            createEndpointForPath(method.getAnnotation(GetMapping.class).path());
+        RoutingFactory routingFactory = new RoutingFactoryBuilder().controller(this)
+                .engine(getEngine()).responseTransformer(getJsonTransformer()).build();
 
-                    if (useEngine) {
-                        get(path, routeViewMethod(method), getEngine());
-                    } else {
-                        get(path, routeMethod(method), getJsonTransformer());
-                    }
+        // CRUD HTTP Request Endpoints
 
-                });
+        // Create
+        routingFactory.createEndpointsFor(PostMapping.class, methods);
 
-        // Post Mapping
-        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PostMapping.class))
-                .forEach(method -> {
-                    method.setAccessible(true);
+        // Read
+        routingFactory.createEndpointsFor(GetMapping.class, methods);
 
-                    boolean useEngine = method.getAnnotation(PostMapping.class).engine();
-                    String path =
-                            createEndpointForPath(method.getAnnotation(PostMapping.class).path());
+        // Update
+        routingFactory.createEndpointsFor(PutMapping.class, methods);
 
-                    if (useEngine) {
-                        post(path, routeViewMethod(method), getEngine());
-                    } else {
-                        post(path, routeMethod(method), getJsonTransformer());
-                    }
-
-                });
-
-
-        // Put Mapping
-        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(PutMapping.class))
-                .forEach(method -> {
-                    method.setAccessible(true);
-                    put(createEndpointForPath(method.getAnnotation(PutMapping.class).path()),
-                            routeMethod(method), getJsonTransformer());
-                });
-
-        // Delete Mapping
-        Arrays.stream(methods).filter(m -> m.isAnnotationPresent(DeleteMapping.class))
-                .forEach(method -> {
-                    method.setAccessible(true);
-                    delete(createEndpointForPath(method.getAnnotation(DeleteMapping.class).path()),
-                            routeMethod(method), getJsonTransformer());
-                });
+        // Delete
+        routingFactory.createEndpointsFor(DeleteMapping.class, methods);
 
     }
 
@@ -341,44 +318,6 @@ public abstract class Controller {
     protected void updateNavigationModel(String currentView) {
         ((Model) getSharedModel().get(NAV_MODEL_NAME))
                 .replaceAll((k, v) -> v = k.equals(currentView) ? "active" : "");
-    }
-
-    /**
-     * Gets a Spark route from a method.
-     * 
-     * @param method to be routed
-     * @return a Spark Java endpoint
-     */
-    private Route routeMethod(Method method) {
-        return (request, response) -> method.invoke(this, request, response);
-    }
-
-
-    /**
-     * Gets a Spartk Template View Route from a method.
-     * 
-     * @param method to be tempalted-view routed.
-     * @return a Spark Java view endpoint
-     */
-    private TemplateViewRoute routeViewMethod(Method method) {
-        return (request, response) -> (ModelAndView) method.invoke(this, request, response);
-    }
-
-    /**
-     * Generates and endpoint for the specified path.
-     * 
-     * @param path a path to use in the endpoint of a controller
-     * @return the route with the final endpoint
-     */
-    private String createEndpointForPath(String path) {
-
-        if (getEndPoint().equals(path)) {
-            return path;
-        }
-
-        path = path.startsWith("/") || path.isEmpty() ? getEndPoint().concat(path)
-                : String.format("%s/%s", getEndPoint(), path);
-        return path;
     }
 
 }
