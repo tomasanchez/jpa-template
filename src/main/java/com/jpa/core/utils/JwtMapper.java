@@ -3,8 +3,10 @@ package com.jpa.core.utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator.Builder;
@@ -53,6 +55,16 @@ public class JwtMapper {
      */
     public UsernamePasswordAuthenticationToken retrieveUserAuthTokenFromHeader(String authHeader) {
         return obtainUserAuthToken(decodeToken(obtainTokenFromHeader(authHeader)));
+    }
+
+    /**
+     * Obtains an User Authentication Token from a Json Web Token.
+     * 
+     * @param jwt encoded to decoded.
+     * @return the UsernamePasswordAuthenticationToken.
+     */
+    public UsernamePasswordAuthenticationToken retrieveUserAuthTokekenFromJWT(String jwt) {
+        return obtainUserAuthToken(decodeToken(jwt));
     }
 
     /**
@@ -106,7 +118,7 @@ public class JwtMapper {
 
         String username = decodedJwt.getSubject();
         String credentials = null;
-        boolean isAuthenticated = false;
+        boolean isAuthenticated = true;
         String[] roles = decodedJwt.getClaim(ROLES_KEY).asArray(String.class);
 
         return new UsernamePasswordAuthenticationToken(username, credentials, isAuthenticated,
@@ -120,6 +132,11 @@ public class JwtMapper {
      * @return a collection of Granted Authorities
      */
     private static Collection<SimpleGrantedAuthority> listAuthorities(String[] roles) {
+
+        if (Objects.isNull(roles)) {
+            return Collections.emptyList();
+        }
+
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         Arrays.stream(roles).forEach(role -> authorities.add(new SimpleGrantedAuthority(role)));
         return authorities;
