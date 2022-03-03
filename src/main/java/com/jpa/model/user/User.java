@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"uname"})})
+@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"uname"})})
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
