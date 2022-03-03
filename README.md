@@ -12,10 +12,12 @@
       - [View](#view)
       - [Model](#model)
       - [Lifecycle](#lifecycle)
+    - [Database package](#database-package)
+      - [Persistent Entity](#persistent-entity)
+      - [Persistent Entity Set](#persistent-entity-set)
   - [Going Further](#going-further)
     - [Routing](#routing)
     - [Request Mapping](#request-mapping)
-    - [Database](#database)
     - [Internationalization](#internationalization)
   - [License](#license)
 
@@ -304,6 +306,147 @@ public class LoginController extends Controller{
 
 By doing this, when reloading the page, the field will no longer be `is-invalid`.
 
+### Database package
+
+#### Persistent Entity
+
+The seed provides you with a `PersistentEntity` class which _should_ be extended by your use case entities which will be persisted in a database. This is only a generic class with convenience attributes for an entity's `Id` and generation of them. See how the [`User`](https://github.com/tomasanchez/jpa-template/blob/82a257b1cbc0b9fe41a437ef5dc9590c928d6534/src/main/java/com/jpa/model/user/User.java#L19) class extends `PersistentEntity`.
+
+```java
+@MappedSuperclass
+public abstract class PersistentEntity implements Serializable {
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "id", updatable = false, nullable = false)
+    private String id;
+
+}
+```
+
+You can easily create your own entity as
+
+```java
+@Entity
+@Table(name = "students", uniqueConstraints = {@UniqueConstraint(columnNames = {"email"})})
+public class Student extends PersistentEntity{
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "email")
+    private String email;
+}
+```
+
+> Recommendation: it is a _good practice_ to define the column name for your entities and for your table.
+
+#### Persistent Entity Set
+
+In addition, there is a `PersistentEntitySet<T extends PersistentEntity>` generic superclass, which allows you to easily create `CRUD Repositories`, as you **DO NOT NEED** to implement them yourself. However, for better performance or special use cases, it is recommended to override them.
+
+The interface provided:
+
+```java
+public abstract class PersistentEntitySet<T extends PersistentEntity> implements WithGlobalEntityManager {
+
+    /**
+     * Retrieves Table name (class name).
+     * 
+     * ? Example: PersistentEntitySet<User> => Table name is User
+     * 
+     * @return the table name
+     */
+    protected String getTableName();
+
+    /**
+     * Obtains all entities in the database.
+     * 
+     * @return an entity list.
+     */
+    public List<T> getEntitySet();
+
+    /**
+     * Persists an entity in database.
+     * 
+     * @param entity to be persisted
+     * @return persisted entity
+     */
+    public T createEntity(T entity);
+    
+
+    /**
+     * Obtains a single entity.
+     * 
+     * @param id the entity unique id
+     * @return entity or null.
+     */
+    public Optional<T> getEntity(long id);
+
+    /**
+     * Updates the database with the entity.
+     * 
+     * @param entity to be updated
+     * @return the updated entity
+     */
+    public T updateEntity(T entity);
+
+    /**
+     * Updates the database with the entity.
+     * 
+     * @param id the entity's unique id
+     * @return the updated entity
+     */
+    public T updateEntity(Long id);
+
+    /**
+     * Removes an entity from database.
+     * 
+     * @param entity the entity to be deleted
+     */
+    public void deleteEntity(T entity);
+
+    /**
+     * Removes an entity from database.
+     * 
+     * @param id the entity unique id
+     */
+    public void deleteEntity(Long id);
+}
+```
+
+**NOTE**: You can easily add your own custom implementation in a child class.
+
+See this case of `UserRepository`
+
+```java
+public class StudentRepository extends PersistentEntitySet<Student> {
+
+    // No need to implement the aforementioned PersistentEntitySet methods. nor override them.
+
+    /**
+     * Obtains an student from database that matches the given email.
+     * 
+     * @param email to match
+     */
+    public Optional<Student> findByEmai(String email){
+
+        try{
+            return Optional.of(
+                                (Student) entityManager()
+                                                .createQuery(String.format("FROM %s S WHERE S.email LIKE :email"))
+                                                .setParameter("email", email)
+                                                .getSingleResult()
+                            );
+        }catch(Exception e){
+            return Optional.empty();
+        }
+    }
+}
+```
+
+
 <br></br>
 
 ## Going Further
@@ -503,119 +646,6 @@ public class UsersControlller extends Controller{
 
 
 > **RECOMENDATION**: If you need to delete/update from a **`form`** a easy way I found is to make a `POST` with a flag which indicates wheter it is a post, a delete or an update. This wil allow you to return a `ModelAndView`. Using `JavaScript`,  `fetch()` an when returning reload the window, this will reflect the changes in the `ViewModel`, but this requires preventing form default behaviour and using a custom implementation. 
-
-<br></br>
-
-
-### Database
-
-The seed provides you with a `PersistentEntity` class which can be extended by your use case entities which will be persisted in a database. This is only a generic class with convenience attributes for an entity's `Id`. See how the `User` class extends `PersistentEntity`.
-
-```java
-@MappedSuperclass
-public abstract class PersistentEntity implements Serializable {
-
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid2")
-    @Column(name = "id", updatable = false, nullable = false)
-    private String id;
-
-}
-```
-
-
-In addition, there is a `PersistentEntitySet<T>` generic superclass, which allows you to easily create `CRUD Repositories`, as you **DO NOT NEED** to implement them yourself. However, for better performance or special use cases, it is recommended to override them.
-
-The interface provided:
-
-```java
-public abstract class PersistentEntitySet<T extends PersistentEntity> implements WithGlobalEntityManager {
-
-    /**
-     * Retrieves Table name (class name).
-     * 
-     * ? Example: PersistentEntitySet<User> => Table name is User
-     * 
-     * @return the table name
-     */
-    protected String getTableName();
-
-    /**
-     * Obtains all entities in the database.
-     * 
-     * @return an entity list.
-     */
-    public List<T> getEntitySet();
-
-    /**
-     * Persists an entity in database.
-     * 
-     * @param entity to be persisted
-     * @return persisted entity
-     */
-    public T createEntity(T entity);
-    
-
-    /**
-     * Obtains a single entity.
-     * 
-     * @param id the entity unique id
-     * @return entity or null.
-     */
-    public Optional<T> getEntity(long id);
-
-    /**
-     * Updates the database with the entity.
-     * 
-     * @param entity to be updated
-     * @return the updated entity
-     */
-    public T updateEntity(T entity);
-
-    /**
-     * Updates the database with the entity.
-     * 
-     * @param id the entity's unique id
-     * @return the updated entity
-     */
-    public T updateEntity(Long id);
-
-    /**
-     * Removes an entity from database.
-     * 
-     * @param entity the entity to be deleted
-     */
-    public void deleteEntity(T entity);
-
-    /**
-     * Removes an entity from database.
-     * 
-     * @param id the entity unique id
-     */
-    public void deleteEntity(Long id);
-}
-```
-
-**NOTE**: You can easily add your own custom implementation in a child class.
-
-See this case of `UserRepository`
-
-```java
-public class UserRepository extends PersistentEntitySet<User> {
-
-    // No need to implement the aforementioned PersistentEntitySet methods. nor override them.
-
-    /**
-     * Obtains an user from database that matches the given username and password.
-     * 
-     * @param username to match
-     * @param password to validate
-     * @return A user (yet to be authenthicated)
-     */
-    public Optional<User> findByUsernameAndPassword(String username, String password);
-}
-```
 
 <br></br>
 
