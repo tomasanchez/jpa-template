@@ -10,8 +10,11 @@
     - [MVC package](#mvc-package)
       - [Controller](#controller)
       - [View](#view)
+      - [Model](#model)
+      - [Lifecycle](#lifecycle)
   - [Going Further](#going-further)
     - [Routing](#routing)
+    - [Request Mapping](#request-mapping)
     - [Database](#database)
     - [Internationalization](#internationalization)
   - [License](#license)
@@ -75,25 +78,24 @@ The most notorious are shown bellow:
 
 ![CORE](./assets/seed-core.png)
 
-<br></br>
-
 There is no need for you to worry about the `core` package, _it just works_. Modifyng it may require some understanding of the MVC pattern and the seed itself.
 
+<br></br>
 ### MVC package
 
-#### Controller
+This seed `MVC` implementation was designed for the specific case of developing a Server-Side-Rendered Web Application, However it does support the use case of REST API.
 
-This seed `Controller` implementation was designed for the specific case of developing a Server-Side-Rendered Web Application, How ever it does support the use case of REST API.
+#### Controller
 
 The **`Controller`** class is a generic implementation. Your controllers must inherit this class. By default all controllers are set to the path `/controllername` with the method [`GET`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods), and if a [`TemplateEngine`]((https://sparkjava.com/documentation#views-and-templates)) is set, it executes a _method_ that responses with a [`ModelAndView`](https://sparkjava.com/documentation#views-and-templates).
 
 **IMPORTANT** all controllers must be inside of the `your.package.controller` package (not `your.package.core.mvc.controller`). And **DO NOT** create multiple controller packages.
 
 
-Suppose you want to display a new "`HelloPage`",in order to achieve this, you must create a new controller:
+Suppose you want to display a new "`HelloPage`", in order to achieve this, you must create a new controller:
 
 ```java
-public class HomeController extends Controller {
+public class HelloController extends Controller {
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
@@ -144,16 +146,22 @@ These handler methods must return a `ModelAndView` object (_unless_ the `engine`
 
 For convenience a method `getModelAndView()` is provided in the Controller superclass, this method will retrieve the handlebars' file. You do not need to modify anything, as long as you **respect the naming convention** of this seed.
 
+<br></br>
+
 #### View
 
-The `View` class represents an abstraction for the corresponding "page" associated with a controller. There is a `one-to-one` relation between `Controller` and `View`.
+The **`View`** class provides a layer of abstraction, representing the logic behind the matching and mapping of an `<HTML/>` file. It contains a `Model`, which will be refered as `ViewModel`, this will allow you to reflect the changes in the _actual_ view, the UI. There is a `one-to-one` relation between `Controller` and `View`.
+
+
+**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HomeController` would send an html made from the `HomeController.html.hbs` template.
 
 If you want to display your controller view, a web-page, you will need a [`HandleBars`](https://handlebarsjs.com/guide/) file which name should be `<ControllerName>.html.hbs` for this case: `HelloController` must have `Hello.html.hbs` in the directory `resources/templates`. 
 
-**NOTE**: the naming is case sensitive, so `hello.html.hbs` won't work out of the box. Ex. `NotFoundController` has a `NotFound.html.hbs` view file.
+**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HelloController` would send an html made from the `Hello.html.hbs` template. The naming is case sensitive, so `hello.html.hbs` won't work out of the box. See how `NotFoundController` has a `NotFound.html.hbs` view file.
+
+<br></br>
 
 A `View` example using the included layout of Bootstrap-navbar: `Hello.html.hbs`
-
 
 ```hbs
 {{#partial "pageTitle"}}
@@ -196,7 +204,252 @@ A `View` example using the included layout of Bootstrap-navbar: `Hello.html.hbs`
 
 Now you can visualize your `Hello.html.hbs` file at <a>https://localhost:7070/hello</a>
 
-The `@GetMapping` will map GET request to the specified `path` or **DEFAULTS** in the controller _endpoint_ which is `/<controllerName>`, there is also an additional parameter: engine which by default will be _true_: this determines wether a web page should be responded, or not. When _true_, function should return a `ModelAndView`, when _false_ it  is recommended to return a string (JSON).
+<br></br>
+
+#### Model
+
+The **`Model`** is another abstraction, also refered here as **`ViewModel`**, in this case of a `Map<String, Object>`, providing convenience methods such as instantiation via `JSON` or `Properies` _file_. Model also provides fluent setter for properties, and can be joined with other models (puts one map into another).
+
+**Note**: Each `View` has a `Model` instance. In addition a `Model` can contain another `Model` within. As a `Controller` has a `View` which contains a `ViewModel`, controllers will have different `ViewModel` instances, however there is a **shared `ViewModel`** among them.
+
+
+![View Example](./assets/view-snippet.svg)
+
+
+`{{isValid}}` is a property of the `ViewModel` which can be set/unset by its corresponding controller, in this scenario it is used to modify a `Bootstrap 5` class for the `input form-control`, the `is-invalid` which alerts an error message when set.
+
+All `ViewModel` properties should be set/unset from the corresponding `Controller` As shown bellow:
+
+```java
+public class LoginController extends Controller{
+
+    @PostMapping
+    public ModelAndView onLogIn(Request request, Response response){
+
+        if(passwordIsWrong(request.queryParams("password"))){
+            this.getView().getModel().set("isValid", "is-invalid");
+        }
+
+        return getModelAndView();
+    }
+}
+```
+
+**NOTE**: None of these properties will be set/unset automatically, unless server restarts or configured by yourself.
+
+<br></br>
+
+#### Lifecycle
+
+You should override this **`LifeCycle`** methods, implementating the lifecycle of the `ViewModel`. However, you can leave them empty, and will work just as well, without any logic.
+
+
+```java
+
+    /* =========================================================== */
+    /* Lifecycle methods ----------------------------------------- */
+    /* =========================================================== */
+
+    /**
+     * This method is called upon initialization of the View. The controller can perform its
+     * internal setup in this hook. It is only called once per View instance, unlike the
+     * onBeforeRendering and onAfterRendering hooks.
+     */
+    protected abstract void onInit();
+
+    /**
+     * 
+     * This method is called every time the View is rendered, before the Renderer is called and the
+     * HTML is placed in the DOM-Tree. It can be used to perform clean-up-tasks before re-rendering.
+     * 
+     * @param request the Spark HTTP request object
+     * @param response the Spark HTTP response object
+     */
+    protected abstract void onBeforeRendering(Request request, Response response);
+
+    /**
+     * 
+     * This method is called every time the View is rendered, after the HTML is placed in the
+     * DOM-Tree. It can be used to apply additional changes to the Model after the Renderer has
+     * finished.
+     * 
+     * @param request the spark HTTP request object
+     * @param response the spark HTTP response object
+     */
+    protected abstract void onAfterRendering(Request request, Response response);
+```
+
+A recommended implementation is use this methods to add logic before the View is rendered and after it has been rendered.
+Continuing the example of above, as the `Model` does not refresh by itself, you should _clean up_ the model in the `onAfterRenderingMethod`, not before as it will not be rendered, due to properties overriding, but for the next request, the model will be _clean_. 
+
+```java
+public class LoginController extends Controller{
+
+    @Override
+    protected void onAfterRendering(Request request, Response response){
+        this.getView().getModel().set("isValid", "");
+    }
+
+    @PostMapping
+    public ModelAndView onLogIn(Request request, Response response){
+
+        if(passwordIsWrong(request.queryParams("password"))){
+            this.getView().getModel().set("isValid", "is-invalid");
+        }
+
+        return getModelAndView();
+    }
+}
+```
+
+By doing this, when reloading the page, the field will no longer be `is-invalid`.
+
+<br></br>
+
+## Going Further
+
+### Routing
+
+This seed contains 2 (two) views, `Home` and `LogIn` and a custom `Not Found` mapped view. Note that each view has its own controller, and all of these inherit from a `BaseController`. This controller has no associated view, as it is purely an implementation of shared methods and convenience shortcuts.
+
+In this seed, used for developing assignments in `UTN-FRBA`, the `BaseController` implements `WithGlobalEntityManager, TransactionalOps`, interface provided by professors of the course [`System's Design`](https://dds-jv.github.io/), which includes convenience methods for transactional operations.
+
+<br></br>
+
+![Routing](./assets/app-routing.png)
+
+<br></br>
+
+### Request Mapping
+
+As shown in the `Spark` [routing-documentation](https://sparkjava.com/documentation#routes), it offers an _easy_ way to create a route.
+
+With three pieces: 
+- verb (get, post, put, delete, etc...)
+- A path (/,  /home, /users/:id)
+- A callback method
+
+```java
+Spark.get("/", (request, response) ->{});
+```
+
+However, for Server-Side rendering you will also need a `TemplateEngine`. And your callback method should return a `ModelAndView`. So it becomes not that simple.
+
+```java
+Spark.get("/", (req, res) ->{
+    return new ModelAndView(new HashMap<>(), "filePath.hbs");
+},
+new HandleBarsTemplateEngine());
+```
+
+When using a controller...
+
+```java
+TemplateEngine hte = new HandleBarsTemplateEngine();
+HomeController home = new HomeController();
+Spark.get("/home", home::handleGETMethod, hte);
+```
+
+Even though this looks cleaner, it leads to the problem of keeping track of the TemplateEngine, controllers instances, literal path. This aggravates when having multiple controllers, with multiple methods even for the same Request method.
+
+Where it can lead to something like:
+
+```java
+TemplateEngine hte = new HandleBarsTemplateEngine();
+HomeController home = new HomeController();
+UsersController users = new UsersController();
+ToDosController todos = new ToDosController();
+LoginController login = new LoginController();
+RegisterController register = new RegisterController();
+// And so on...
+Spark.get("/home", home::handleGETMethod, hte);
+Spark.get("/home/:id", home::handleGETWithIDMethod, hte);
+Spark.post("/home", home::handlePostMethod, hte);
+Spark.post("/home/:id", home::handlePostWithIdMethod, hte);
+// And so on...
+```
+
+Now deleting, or altering any route will be a nightmare, with a very poor legibility. Even JSON or any other MediaType response routing requieres a `ResponseTransformer`.
+
+In order to simplify and offer better legibility, inspired by the `SpirngBoot` framework, this seed contains `@interfaces` which will do the mapping for you.
+
+The provided annotations are:
+
+```java
+/**
+ * Annotation for mapping HTTP GET requests onto specific handler methods.
+ * 
+ * @author Tomás Sánchez.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface GetMapping {
+
+    /**
+     * The path of the endpoint.
+     * 
+     */
+    String path() default "";
+
+    /**
+     * Wether a Template engine should be used or not.
+     */
+    boolean engine() default true;
+}
+
+/**
+ * Annotation for mapping HTTP POST requests onto specific handler methods.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PostMapping {
+
+    /**
+     * The path of the endpoint.
+     * 
+     */
+    String path() default "";
+
+    /**
+     * Wether a Template engine should be used or not.
+     */
+    boolean engine() default true;
+}
+
+/**
+ * Annotation for mapping HTTP DELETE requests onto specific handler methods.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface DeleteMapping {
+
+    /**
+     * The path of the endpoint.
+     * 
+     */
+    String path() default "/:id";
+
+}
+
+
+/**
+ * Annotation for mapping HTTP PUT requests onto specific handler methods.
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PutMapping {
+
+    /**
+     * The path of the endpoint.
+     * 
+     */
+    String path() default "/:id";
+
+}
+```
+
+
+The `@GetMapping` will map GET request to the specified `path` or **DEFAULTS** in the controller _endpoint_ which is `/<controllerName>`, there is also an additional parameter: engine which by default will be _true_: this determines wether the response is an html or not. When _true_, function should return a `ModelAndView`, when _false_ it  is recommended to return a serializable object as a `ResponseTransformer` will be used to adapt the response to JSON type.
 
 
 
@@ -219,57 +472,40 @@ public class HomeController extends Controller {
 
 Will result in setting a `GET` endpoint on `/home/homepage`.
 
-The same rule applies to `@PostMapping`. However, `@DeleteMapping` and `@PutMapping` do not use the engine logic, for both is recommended to return a JSON.
+The same rule applies to `@PostMapping`. However, `@DeleteMapping` and `@PutMapping` do not use the engine logic, for both is recommended to return an object.
+
+As shown below:
+
+```java
+
+public class UsersControlller extends Controller{
+
+    /* =========================================================== */
+    /* HTTP Request methods -------------------------------------- */
+    /* =========================================================== */
+
+    @DeleteMapping
+    public Object onDeleteUser(Request request, Response response){
+        userService.delete(request.params("id"));
+        return null;
+    }
+
+    @PutMapping
+    public Object onDeleteUser(Request request, Response response){
+        return userService.update(request.params("id"), request.queryParams("user"));
+    }
+
+}
+```
+
+**NOTE**: both `@DeleteMapping` and `@PutMapping` will use the default path `users/:id`.
+
+
+
+> **RECOMENDATION**: If you need to delete/update from a **`form`** a easy way I found is to make a `POST` with a flag which indicates wheter it is a post, a delete or an update. This wil allow you to return a `ModelAndView`. Using `JavaScript`,  `fetch()` an when returning reload the window, this will reflect the changes in the `ViewModel`, but this requires preventing form default behaviour and using a custom implementation. 
 
 <br></br>
 
-> **RECOMENDATION**: If you need to delete/update from a form the easiest way is to make a `POST` with a flag which indicates wheter it is a post, a delete or an update. This wil allow you to return a `ModelAndView`. Or if using `JavaScript`,  `fetch()` an when returning reload the window, this will reflect the changes in the `ViewModel`. 
-
-<br></br>
-
-**LifeCycle** methods.
-
-You should override this methods, implementating the lifecycle of the `ViewModel`. However, you can leave them empty, and will work just as well, without any logic.
-
-![Life Cycle Methods](./assets/controller-snippet.svg)
-
-<br></br>
-
-The **`View`** class provides a layer of abstraction, representing the logic behind the matching and mapping of an `<HTML/>` file. It contains a `Model`, which will be refered as `ViewModel`, this will allow you to reflect the changes in the _actual_ view, the UI.
-
-**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HomeController` would send an html made from the `HomeController.html.hbs` template.
-
-<br></br>
-
-The `Model` is another abstraction, in this case of a `Map<String, Object>`, providing convenience methods such as instantiation via `JSON` or `Properies` _file_. Model also provides fluent setter for properties, and can be joined with other models (puts one map into another).
-
-**Note**: Each `View` has a `Model` instance. In addition a `Model` can contain another `Model` within. As a `Controller` has a `View` which contains a `ViewModel`, controllers will have different `Model` instances, however there is a shared `Model` among them.
-
-
-
-![View Example](./assets/view-snippet.svg)
-
-
-`{{isValid}}` is a property of the `ViewModel` which can be set/unset by its corresponding controller, in this scenario it is used to modify a `Bootstrap 5` class for the `input form-control`, the `is-invalid` which alerts an error message when set.
-
-
-<br></br>
-
-## Going Further
-
-<br></br>
-
-### Routing
-
-This seed contains 2 (two) views, `Home` and `LogIn` and a custom `Not Found` mapped view. Note that each view has its own controller, and all of these inherit from a `BaseController`. This controller has no associated view, as it is purely an implementation of shared methods and convenience shortcuts.
-
-In this seed, used for developing assignments in `UTN-FRBA`, the `BaseController` implements `WithGlobalEntityManager, TransactionalOps`, interface provided by professors of the course [`System's Design`](https://dds-jv.github.io/), which includes convenience methods for transactional operations.
-
-<br></br>
-
-![Routing](./assets/app-routing.png)
-
-<br></br>
 
 ### Database
 
