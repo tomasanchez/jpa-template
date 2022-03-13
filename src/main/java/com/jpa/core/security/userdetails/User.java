@@ -2,8 +2,8 @@ package com.jpa.core.security.userdetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -55,12 +55,12 @@ public class User implements UserDetails {
         this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
     }
 
-    private static SortedSet<GrantedAuthority> sortAuthorities(
+    private static Set<GrantedAuthority> sortAuthorities(
             Collection<? extends GrantedAuthority> authorities) {
         Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
         // Ensure array iteration order is predictable (as per
         // UserDetails.getAuthorities() contract and SEC-717)
-        SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet<>();
+        Set<GrantedAuthority> sortedAuthorities = new HashSet<>();
         for (GrantedAuthority grantedAuthority : authorities) {
             Assert.notNull(grantedAuthority,
                     "GrantedAuthority list cannot contain any null elements");

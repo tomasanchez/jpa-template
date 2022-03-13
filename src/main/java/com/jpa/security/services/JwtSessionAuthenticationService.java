@@ -7,12 +7,12 @@ import com.jpa.core.security.auth.UsernamePasswordAuthenticationToken;
 import com.jpa.core.security.auth.exception.AuthenticationException;
 import com.jpa.core.security.userdetails.User;
 import com.jpa.core.utils.JwtMapper;
-import com.jpa.core.web.RequestResponseHandler;
 import org.eclipse.jetty.http.HttpStatus;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import spark.Filter;
 import spark.Request;
 import spark.Response;
 
@@ -44,14 +44,14 @@ public class JwtSessionAuthenticationService {
      * @param request the Spark Java HTTP request object
      * @param response the Spark Java HTTP response object
      */
-    public void attemptAuthentication(Request request, Response response) {
+    public void attemptAuthentication(Request request, Response response) throws Exception {
         this.attemptAuthentication(request, response, (r, q) -> {
         }, (r, q) -> {
         });
     }
 
-    public void attemptAuthentication(Request request, Response response,
-            RequestResponseHandler onSuccess, RequestResponseHandler onFailure) {
+    public void attemptAuthentication(Request request, Response response, Filter onSuccess,
+            Filter onFailure) throws Exception {
 
         String username = request.queryParams("user");
         String password = request.queryParams("password");
@@ -63,7 +63,6 @@ public class JwtSessionAuthenticationService {
 
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(username, password);
-
 
         try {
             successfulAuthentication(request, response, authenticationManager.authenticate(token));
@@ -88,7 +87,7 @@ public class JwtSessionAuthenticationService {
 
         User user = (User) authentication.getPrincipal();
         String issuer = request.uri();
-        String sessionToken = jwtMapper.generateTokenForUser(user, TEN_MINUTES * 6, issuer, false);
+        String sessionToken = jwtMapper.generateTokenForUser(user, TEN_MINUTES * 6, issuer, true);
 
         request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY, sessionToken);
         request.session().attribute(Authentication.AUTHENTICATION_KEY, authentication);
