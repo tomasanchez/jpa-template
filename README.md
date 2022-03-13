@@ -7,6 +7,7 @@
     - [**How does it all work?** TLDR:](#how-does-it-all-work-tldr)
     - [**What do I have to do?** / **Quick Start**](#what-do-i-have-to-do--quick-start)
     - [There are a lot of folders! Where do I start?](#there-are-a-lot-of-folders-where-do-i-start)
+      - [Your project](#your-project)
     - [MVC package](#mvc-package)
       - [Controller](#controller)
       - [View](#view)
@@ -81,6 +82,40 @@ The most notorious are shown bellow:
 ![CORE](./assets/seed-core.png)
 
 There is no need for you to worry about the `core` package, _it just works_. Modifyng it may require some understanding of the MVC pattern and the seed itself.
+
+#### Your project
+
+This seed proposes the following package structure:
+
+- Your package
+    - app
+      - seeder
+    - config
+    - controller
+    - model
+      - user
+    - repository
+    - services
+    - security
+      - auth
+      - filter
+      - services
+
+**app**: here it is recommended to initialize the server. Note: this is already provided in the `Router` class.
+
+**config**: use this package to develop your own `@Configuration` classes a security configuration is already provided.
+
+**controller**: use this package to group the different controllers classes.
+
+**model**: it is recommended to develop entities in this package.
+
+**repository**: use this package for Domain objects collections
+
+**services**: optional split code your controller business-logic and interaction with a specific respository. For example: if you need to send an e-Mail to users during registration, instead of coding this logic on a `RegistrationController` you can do it in a `UserService` which your controller will make use of.
+
+**security**: develop yout custom security services and filters.
+
+NOTE: As per [Eric Evans' book Domain-Driven Design](https://www.pearson.com/store/p/domain-driven-design-tackling-complexity-in-the-heart-of-software/P100000775942/9780321125217), the “_repository is a mechanism for encapsulating storage, retrieval, and search behavior, which emulates a collection of objects_.” Likewise, according to [Patterns of Enterprise Application Architecture](https://www.pearson.com/store/p/patterns-of-enterprise-application-architecture/P100001391761/9780321127426#), it “mediates between the domain and data mapping layers using a collection-like interface for accessing domain objects.”
 
 <br></br>
 ### MVC package
