@@ -3,11 +3,14 @@
     http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd" version="2.0">
 
     <persistence-unit name="db" transaction-type="RESOURCE_LOCAL">
-        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <!-- provedor/implementacao do JPA -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <!-- Model Classes -->
         <!-- User -->
         <class>com.jpa.model.user.User</class>
+        <class>com.jpa.model.user.Role</class>
+        <class>com.jpa.model.user.Privilege</class>
 
         <properties>
             <property name="hibernate.archive.autodetection" value="class" />
