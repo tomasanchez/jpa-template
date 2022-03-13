@@ -4,7 +4,6 @@ import static spark.Spark.after;
 import static spark.Spark.before;
 import java.lang.reflect.Method;
 import java.util.Map;
-import com.jpa.core.config.WebSecurityConfig;
 import com.jpa.core.mvc.controller.routing.DeleteMapping;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
@@ -13,6 +12,7 @@ import com.jpa.core.mvc.controller.routing.RoutingFactory;
 import com.jpa.core.mvc.controller.routing.RoutingFactoryBuilder;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
+import com.jpa.core.security.auth.SecurityContext;
 import com.jpa.core.utils.JsonTransformer;
 import com.jpa.i18n.ResourceBundle;
 import spark.ModelAndView;
@@ -35,7 +35,7 @@ public abstract class Controller {
     private static TemplateEngine engine;
     private static ResourceBundle i18n = new ResourceBundle();
     private static ResponseTransformer jsonTransformer = new JsonTransformer();
-    private static WebSecurityConfig webSecurityConfig;
+    private static SecurityContext securityContext;
     private View view;
 
     /* =========================================================== */
@@ -130,12 +130,12 @@ public abstract class Controller {
      * 
      * @param wsc a Web Security Configuration to be used
      */
-    public static void setWebSecurityConfig(WebSecurityConfig wsc) {
-        webSecurityConfig = wsc;
+    public static void setSecurityContext(SecurityContext wsc) {
+        securityContext = wsc;
     }
 
-    protected static WebSecurityConfig getWebSecurityConfig() {
-        return webSecurityConfig;
+    protected static SecurityContext getSecurityContext() {
+        return securityContext;
     }
 
     /**

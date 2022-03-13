@@ -4,7 +4,10 @@ import static spark.Spark.halt;
 import java.util.Map;
 import java.util.Objects;
 import com.jpa.core.mvc.controller.Controller;
+import com.jpa.core.security.auth.Authentication;
+import com.jpa.core.security.auth.UsernamePasswordAuthenticationToken;
 import com.jpa.core.services.ControllerLoaderService;
+import com.jpa.core.utils.JwtMapper;
 import com.jpa.model.user.User;
 import com.jpa.repositories.UserRepository;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
@@ -26,7 +29,7 @@ public abstract class BaseController extends Controller
      * Static method for initialization of BaseController.
      */
     public static void initBaseController() {
-        onAuthenticate(null);
+        modelAuthenticate(null);
     }
 
     /* =========================================================== */
@@ -48,7 +51,7 @@ public abstract class BaseController extends Controller
      * @param text the key value
      * @return the text value of the key
      */
-    public String getText(String text) {
+    public static String getText(String text) {
         return (String) Controller.getI18n().getText(text);
     }
 
@@ -58,7 +61,7 @@ public abstract class BaseController extends Controller
      * @param response the spark HTTP response object
      * @param location an endpoint, a controller name or a path
      */
-    public void navTo(Response response, String location) {
+    public static void navTo(Response response, String location) {
 
         if (location.startsWith("/")) {
             response.redirect(location);
@@ -90,7 +93,7 @@ public abstract class BaseController extends Controller
      * 
      * @param user the user to be set
      */
-    protected static void onAuthenticate(User user) {
+    protected static void modelAuthenticate(User user) {
         getSharedModel().set("user", user).set("loggedIn", !Objects.isNull(user));
     }
 
@@ -122,7 +125,22 @@ public abstract class BaseController extends Controller
      * @return wheter there is a session or not
      */
     protected boolean isLogged(Request request) {
-        return !Objects.isNull(request.session().attribute("uid"));
+
+        String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
+
+        if (Objects.isNull(jwt)) {
+            return false;
+        }
+
+        try {
+            UsernamePasswordAuthenticationToken auth =
+                    new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt);
+
+            return getSecurityContext().getAuthenticationManager().authenticate(auth)
+                    .isAuthenticated();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -143,7 +161,5 @@ public abstract class BaseController extends Controller
                     401);
         }
     }
-
-
 
 }

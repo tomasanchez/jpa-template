@@ -1,8 +1,6 @@
 package com.jpa.controller;
 
 import java.util.Objects;
-import com.jpa.config.SecurityConfig;
-import com.jpa.core.config.WebSecurityConfig;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
 import com.jpa.security.services.JwtSessionAuthenticationService;
@@ -12,10 +10,9 @@ import spark.Response;
 
 public class LogInController extends BaseController {
 
-    private WebSecurityConfig wsc = SecurityConfig.getInstance();
 
     private JwtSessionAuthenticationService authService =
-            new JwtSessionAuthenticationService(wsc.getAuthenticationManager());
+            new JwtSessionAuthenticationService(getSecurityContext().getAuthenticationManager());
 
     /* =========================================================== */
     /* Lifecycle methods ----------------------------------------- */
@@ -26,7 +23,7 @@ public class LogInController extends BaseController {
 
     @Override
     protected void onBeforeRendering(Request request, Response response) {
-        if (isLogged()) {
+        if (isLogged(request)) {
             navTo(response, "home");
         }
     }
@@ -50,7 +47,13 @@ public class LogInController extends BaseController {
     protected ModelAndView onPost(Request request, Response response) {
 
         if (Objects.isNull(request.queryParams("uid"))) {
-            onLogIn(request, response);
+
+            try {
+                onLogIn(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             onLogOut(request, response);
         }
@@ -68,7 +71,7 @@ public class LogInController extends BaseController {
      * @param request the spark HTTP request object
      * @param response the spark HTTP response object
      */
-    private void onLogIn(Request request, Response response) {
+    private void onLogIn(Request request, Response response) throws Exception {
 
         authService.attemptAuthentication(request, response, this::onSuccessfulAuthentication,
                 this::onUnsuccessfulAuthenticaiton);
@@ -82,17 +85,19 @@ public class LogInController extends BaseController {
      * @param response the spark HTTP response object
      */
     private void onLogOut(Request request, Response response) {
-        onAuthenticate(null);
+        modelAuthenticate(null);
         request.session().invalidate();
         navTo(response, "home");
     }
 
 
     private void onSuccessfulAuthentication(Request request, Response response) {
+        getSharedModel().set("loggedIn", true);
         navTo(response, "home");
     }
 
     private void onUnsuccessfulAuthenticaiton(Request request, Response response) {
+        modelAuthenticate(null);
         String username = request.queryParams("user");
         getView().getModel().set("isValid", "is-invalid").set("username", username);
     }
