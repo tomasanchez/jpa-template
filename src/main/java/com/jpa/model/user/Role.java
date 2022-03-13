@@ -1,13 +1,15 @@
 package com.jpa.model.user;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import com.jpa.core.database.PersistentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,23 +22,23 @@ import lombok.NoArgsConstructor;
  * @author Tomás Sánchez.
  */
 @Entity
-@Table(name = "roles", uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})})
+@Table(name = "roles")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class Role extends PersistentEntity {
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-    @ManyToMany(mappedBy = "roles")
-    private Collection<User> users;
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    private Set<User> users;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "roles_privileges",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "privilege_id", referencedColumnName = "id"))
-    private Collection<Privilege> privileges;
+    private Set<Privilege> privileges = Collections.emptySet();
 
 }

@@ -1,15 +1,12 @@
 package com.jpa.model.user;
 
-import java.util.Collection;
-import java.util.Collections;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import com.jpa.core.database.PersistentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,24 +19,24 @@ import lombok.NoArgsConstructor;
  * @author Tomás Sánchez
  */
 @Entity
-@Table(name = "users", uniqueConstraints = {@UniqueConstraint(columnNames = {"uname"})})
+@Table(name = "users")
 @Data
 @EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends PersistentEntity {
 
-    @Column(name = "uname", nullable = false)
+    @Column(name = "uname", nullable = false, unique = true)
     private String uname;
 
     @Column(name = "password", nullable = false)
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-    private Collection<Role> roles = Collections.emptyList();
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinTable(name = "users_role",
+            joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    private Role role;
 
     /**
      * Allows the creation of users with no roles.
