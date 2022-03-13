@@ -6,10 +6,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import com.google.common.net.HttpHeaders;
-import com.jpa.core.security.auth.SecurityContext;
 import com.jpa.core.security.auth.AuthenticationManager;
 import com.jpa.core.security.auth.AuthorizationManager;
-import com.jpa.core.security.userdetails.UserDetailsService;
+import com.jpa.core.security.auth.SecurityContext;
 import org.eclipse.jetty.http.HttpStatus;
 import lombok.Getter;
 import spark.Filter;
@@ -23,8 +22,6 @@ public class HttpSecurity implements SecurityContext {
     private AuthenticationManager authenticationManager;
 
     private AuthorizationManager authorizationManager;
-
-    private UserDetailsService userDetailsService;
 
     private final HashMap<String, String> corsHeaders = new HashMap<>();
 
@@ -44,10 +41,9 @@ public class HttpSecurity implements SecurityContext {
      * @param userDetailsService which provides user
      */
     public HttpSecurity(AuthenticationManager authenticationManager,
-            AuthorizationManager authorizationManager, UserDetailsService userDetailsService) {
+            AuthorizationManager authorizationManager) {
         this.authenticationManager = authenticationManager;
         this.authorizationManager = authorizationManager;
-        this.userDetailsService = userDetailsService;
     }
 
     /**

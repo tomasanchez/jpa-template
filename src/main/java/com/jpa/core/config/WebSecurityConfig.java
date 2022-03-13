@@ -1,29 +1,28 @@
 package com.jpa.core.config;
 
-import com.jpa.core.security.auth.AuthenticationManager;
-import com.jpa.core.security.auth.AuthorizationManager;
-import com.jpa.core.security.crypto.PasswordEncoder;
+import com.jpa.core.mvc.controller.Controller;
+import com.jpa.core.security.auth.SecurityContext;
 
-public interface WebSecurityConfig {
-
-    /**
-     * Indicates the Authentication Manager used.
-     * 
-     * @return the current <code>AuthenticationManager</code>
-     */
-    public AuthenticationManager getAuthenticationManager();
+/**
+ * Generic Web Configuration implementation.
+ * 
+ * @author Tomás Sánchez
+ */
+public abstract class WebSecurityConfig extends SimpleConfiguration {
 
     /**
-     * Indicates the Authorization Manager used.
+     * Sets the SecurityContext for authentication/authorization.
      * 
-     * @return the <code>AuthorizationManager</code> configurated to be used
+     * @param http the HttpSecurity context holder
      */
-    public AuthorizationManager getAuthorizationManager();
+    protected void setSecurityContext(SecurityContext http) {
+        Controller.setSecurityContext(http);
+    }
 
     /**
-     * Retrieves the configurated password encoder.
-     * 
-     * @return a new password encoder of the configurated type
+     * This method will configure a new security context: it must call the
+     * <code>setSecurityContext</code> method.
      */
-    public PasswordEncoder getPasswordEncoder();
+    public abstract void configure();
+
 }

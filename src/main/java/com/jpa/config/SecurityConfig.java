@@ -1,13 +1,12 @@
 package com.jpa.config;
 
+import com.jpa.core.config.Configuration;
 import com.jpa.core.config.WebSecurityConfig;
-import com.jpa.core.mvc.controller.Controller;
-import com.jpa.core.security.auth.AuthenticationManager;
-import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.crypto.BCryptPasswordEncoder;
 import com.jpa.core.security.crypto.PasswordEncoder;
-import com.jpa.core.security.userdetails.UserDetailsService;
+import com.jpa.core.security.web.HttpSecurity;
 import com.jpa.security.auth.SimpleAuthenticationProvider;
+import com.jpa.security.auth.SimpleAuthorizationProvider;
 import com.jpa.security.services.SimpleUserService;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,36 +16,20 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public final class SecurityConfig implements WebSecurityConfig {
-
-
-    private AuthenticationManager authenticationManager;
-
-    private AuthorizationManager authorizationManager;
-
-    private UserDetailsService userDetailsService;
-
-    private static SecurityConfig instance;
-
-    public static SecurityConfig getInstance() {
-        if (instance == null) {
-            configure();
-        }
-        return instance;
-    }
-
-    private SecurityConfig() {}
-
-
-    public static void configure() {
-        instance = new SecurityConfig();
-        instance.setUserDetailsService(new SimpleUserService());
-        instance.setAuthenticationManager(instance.authProvider());
-        Controller.setWebSecurityConfig(instance);
-    }
+@Configuration
+public final class SecurityConfig extends WebSecurityConfig {
 
     @Override
-    public PasswordEncoder getPasswordEncoder() {
+    public void configure() {
+
+        HttpSecurity http = new HttpSecurity(authenticationProvider(), authorizationProvider());
+
+        http.cors().build();
+
+        setSecurityContext(http);
+    }
+
+    public static PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -56,11 +39,21 @@ public final class SecurityConfig implements WebSecurityConfig {
      * @return a Simple Authentication Provider with the current <code>PasswordEncoder</code> and
      *         <code>UserDetailsService</code>
      */
-    private SimpleAuthenticationProvider authProvider() {
+    public static SimpleAuthenticationProvider authenticationProvider() {
         SimpleAuthenticationProvider authProvider = new SimpleAuthenticationProvider();
         authProvider.setPasswordEncoder(getPasswordEncoder());
-        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setUserDetailsService(new SimpleUserService());
         return authProvider;
+    }
+
+
+    /**
+     * Builds an Authorization Provider.
+     * 
+     * @return a Simple <code>AuthorizationProvider</code>.
+     */
+    public static SimpleAuthorizationProvider authorizationProvider() {
+        return new SimpleAuthorizationProvider();
     }
 
 }
