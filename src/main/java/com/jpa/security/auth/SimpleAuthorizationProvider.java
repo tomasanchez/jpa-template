@@ -1,11 +1,14 @@
 package com.jpa.security.auth;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import com.jpa.core.security.auth.Authentication;
 import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.auth.exception.AuthorizationException;
+import com.jpa.core.security.auth.exception.ForbiddenException;
+import com.jpa.core.security.auth.exception.UnauthorizedException;
 import com.jpa.core.security.userdetails.GrantedAuthority;
 
 public class SimpleAuthorizationProvider implements AuthorizationManager {
@@ -15,12 +18,12 @@ public class SimpleAuthorizationProvider implements AuthorizationManager {
     public void authorize(Authentication authentication, Collection<GrantedAuthority> authorities)
             throws AuthorizationException {
 
-        if (authorities.isEmpty()) {
-            return;
+        if (authentication == null) {
+            throw new UnauthorizedException("No authentication provided");
         }
 
-        if (authentication == null) {
-            throw new AuthorizationException("No authentication was provided");
+        if (authorities == null || authorities.isEmpty()) {
+            return;
         }
 
         Collection<? extends GrantedAuthority> authAuthorities = authentication.getAuthorities();
@@ -32,12 +35,17 @@ public class SimpleAuthorizationProvider implements AuthorizationManager {
                 .anyMatch(strAuthorities::contains);
 
         if (!hasAnyAuthority) {
-            throw new AuthorizationException(String.format(
+            throw new ForbiddenException(String.format(
                     "The subject %s has no required authority. Must have any of {%s}",
                     authentication.getName(), strAuthorities.stream()
                             .reduce((a, b) -> String.format("%s, %s", a, b)).orElse("Undefined")));
         }
 
+    }
+
+    @Override
+    public void authorize(Authentication authentication) {
+        authorize(authentication, Collections.emptyList());
     }
 
 }

@@ -27,6 +27,8 @@ public class JwtMapper {
 
     private static final String ROLES_KEY = "roles";
 
+    private static final String CREDENTIALS_KEY = "credentials";
+
     private static final String TOKEN_DEFAULT_SECRET = "secret";
 
     /**
@@ -81,7 +83,7 @@ public class JwtMapper {
 
         Builder jwtBuilder = JWT.create().withSubject(user.getUsername())
                 .withExpiresAt(new Date(System.currentTimeMillis() + expirationInMinutes))
-                .withIssuer(issuer);
+                .withIssuer(issuer).withClaim(CREDENTIALS_KEY, user.getPassword());
 
         return withClaims ? jwtBuilder.withClaim(ROLES_KEY, obtainAuthorities(user)).sign(algorithm)
                 : jwtBuilder.sign(algorithm);
@@ -117,7 +119,7 @@ public class JwtMapper {
     private static UsernamePasswordAuthenticationToken obtainUserAuthToken(DecodedJWT decodedJwt) {
 
         String username = decodedJwt.getSubject();
-        String credentials = null;
+        String credentials = decodedJwt.getClaim(CREDENTIALS_KEY).asString();
         boolean isAuthenticated = true;
         String[] roles = decodedJwt.getClaim(ROLES_KEY).asArray(String.class);
 
