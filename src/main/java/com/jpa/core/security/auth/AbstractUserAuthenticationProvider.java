@@ -55,7 +55,9 @@ public abstract class AbstractUserAuthenticationProvider implements Authenticati
         }
 
         if (!getPasswordEncoder().matches(credentials, user.getPassword())) {
-            throw new BadCredentialsException("Password does not match");
+            if (!credentials.equals(user.getPassword())) {
+                throw new BadCredentialsException("Password does not match");
+            }
         }
 
         return createSuccessAuthentication(authentication.getPrincipal(), authentication, user);
