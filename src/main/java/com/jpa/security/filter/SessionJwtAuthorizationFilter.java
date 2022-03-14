@@ -7,10 +7,12 @@ import com.jpa.core.security.auth.Authentication;
 import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.auth.exception.ForbiddenException;
 import com.jpa.core.security.auth.exception.UnauthorizedException;
+import com.jpa.core.security.filter.SparkAuthorizationFilter;
 import com.jpa.core.security.userdetails.GrantedAuthority;
 import com.jpa.core.utils.JwtMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import spark.Request;
 import spark.Response;
@@ -18,22 +20,15 @@ import spark.Response;
 @Setter
 @Getter
 @AllArgsConstructor
-public class SessionJwtAuthorizationFilter {
+@NoArgsConstructor
+public class SessionJwtAuthorizationFilter implements SparkAuthorizationFilter {
 
     private JwtMapper jwtMapper = new JwtMapper();
 
     private AuthorizationManager authorizationManager;
 
-    /**
-     * Session Authorization filter.
-     * 
-     * @param request the Spark HTTP request object
-     * @param response the Spark HTTP response object
-     * @param authorities a list of required authorities
-     * @throws UnauthorizedException when no session was found or token has expired.
-     * @throws ForbiddenException when current user is not authorized
-     */
-    public void sessionAuthorize(Request request, Response response,
+    @Override
+    public void authorizationFilter(Request request, Response response,
             Collection<GrantedAuthority> authorities) {
 
         String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
@@ -63,8 +58,9 @@ public class SessionJwtAuthorizationFilter {
         authorizationManager.authorize(auth, authorities);
     }
 
-    public void sessionAuthorize(Request request, Response response) {
-        sessionAuthorize(request, response, Collections.emptyList());
+    @Override
+    public void authorizationFilter(Request request, Response response) {
+        authorizationFilter(request, response, Collections.emptyList());
     }
 
 }

@@ -7,6 +7,7 @@ import com.jpa.core.security.crypto.PasswordEncoder;
 import com.jpa.core.security.web.HttpSecurity;
 import com.jpa.security.auth.SimpleAuthenticationProvider;
 import com.jpa.security.auth.SimpleAuthorizationProvider;
+import com.jpa.security.filter.SessionJwtAuthorizationFilter;
 import com.jpa.security.services.SimpleUserService;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,10 @@ public final class SecurityConfig extends WebSecurityConfig {
 
         HttpSecurity http = new HttpSecurity(authenticationProvider(), authorizationProvider());
 
-        http.cors().build();
+        SessionJwtAuthorizationFilter jwtAuthorizationFilter = new SessionJwtAuthorizationFilter();
+        jwtAuthorizationFilter.setAuthorizationManager(http.getAuthorizationManager());
+
+        http.cors().authorizationFilter(jwtAuthorizationFilter).build();
 
         setSecurityContext(http);
     }
