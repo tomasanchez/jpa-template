@@ -8,7 +8,7 @@
       "type": "java",
       "name": "Server",
       "request": "launch",
-      "mainClass": "com.jpa.app.Router",
+      "mainClass": "com.jpa.app.SparkApplication",
       "projectName": "template"
     },
     {

@@ -9,7 +9,7 @@ import com.jpa.core.services.ControllerLoaderService;
 import spark.TemplateEngine;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
-public class Router {
+public class SparkApplication {
 
     private static final Integer port = 7070;
     private static final TemplateEngine ENGINE = new HandlebarsTemplateEngine();
@@ -23,15 +23,17 @@ public class Router {
 
     private static void server() {
         System.out.println("Initializing server...");
+        staticFileLocation("/public");
         port(port);
         System.out.println("Listening to port ".concat(port.toString()));
-        staticFileLocation("/public");
         serveRoutes();
     }
 
     private static void serveRoutes() {
         // ! INJECT Template Engine into controller class
         Controller.setEngine(ENGINE);
+
+        // ? Call the LoaderServices.
         ConfigurationLoaderService.getService().loadConfigurations("com.jpa");
         ControllerLoaderService.getService().findAll();
 
