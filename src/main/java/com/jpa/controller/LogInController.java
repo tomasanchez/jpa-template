@@ -10,7 +10,6 @@ import spark.Response;
 
 public class LogInController extends BaseController {
 
-
     private JwtSessionAuthenticationService authService =
             new JwtSessionAuthenticationService(getSecurityContext().getAuthenticationManager());
 
@@ -19,7 +18,10 @@ public class LogInController extends BaseController {
     /* =========================================================== */
 
     @Override
-    protected void onInit() {}
+    protected void onInit() {
+        // Sets not LoggedIn in the View Model.
+        modelAuthenticate(null);
+    }
 
     @Override
     protected void onBeforeRendering(Request request, Response response) {

@@ -6,8 +6,10 @@ import java.util.Objects;
 import com.jpa.core.mvc.controller.Controller;
 import com.jpa.core.security.auth.Authentication;
 import com.jpa.core.security.auth.UsernamePasswordAuthenticationToken;
+import com.jpa.core.security.userdetails.GrantedAuthority;
 import com.jpa.core.services.ControllerLoaderService;
 import com.jpa.core.utils.JwtMapper;
+import com.jpa.model.user.Privilege;
 import com.jpa.model.user.User;
 import com.jpa.repositories.UserRepository;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
@@ -19,18 +21,6 @@ import spark.Response;
 
 public abstract class BaseController extends Controller
         implements WithGlobalEntityManager, TransactionalOps {
-
-
-    /* =========================================================== */
-    /* LifeCycle Static BaseController --------------------------- */
-    /* =========================================================== */
-
-    /**
-     * Static method for initialization of BaseController.
-     */
-    public static void initBaseController() {
-        modelAuthenticate(null);
-    }
 
     /* =========================================================== */
     /* Convenience Methods --------------------------------------- */
@@ -95,6 +85,18 @@ public abstract class BaseController extends Controller
      */
     protected static void modelAuthenticate(User user) {
         getSharedModel().set("user", user).set("loggedIn", !Objects.isNull(user));
+        setCorrespondingViewLinks(user);
+    }
+
+    /**
+     * Sets the shared model for link visibility.
+     * 
+     * @param user the user to verify authorities against
+     */
+    protected static void setCorrespondingViewLinks(User user) {
+        boolean isAdmin = hasAuthority(user, "ROLE_ADMIN");
+        boolean isStaff = hasAuthority(user, "ROLE_STAFF");
+        getSharedModel().set("isAdmin", isAdmin).set("isStaff", isStaff);
     }
 
     /**
@@ -124,7 +126,7 @@ public abstract class BaseController extends Controller
      * @param request the Spark HTTP
      * @return wheter there is a session or not
      */
-    protected boolean isLogged(Request request) {
+    protected static boolean isLogged(Request request) {
 
         String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
 
@@ -159,6 +161,54 @@ public abstract class BaseController extends Controller
             halt(401);
             response.redirect(ControllerLoaderService.getService().find("login").getEndPoint(),
                     401);
+        }
+    }
+
+    /**
+     * Checks wether a session has a given authority.
+     * 
+     * @param request the HTTP Spark request object
+     * @param authority the authority to check
+     * @return wether the authentication has the authority or not
+     */
+    protected static boolean hasAuthority(Request request, String authority) {
+
+        if (!isLogged(request)) {
+            return false;
+        }
+
+        String jwt = request.session()
+                .attribute(request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY));
+
+        try {
+            Authentication authentication = new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt);
+
+            return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                    .anyMatch(grantedAuthority -> grantedAuthority.equals(authority));
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks if an <code>User</code> has a given authority.
+     * 
+     * @param user to verify
+     * @param authority required for the user to have
+     * @return wether the authentication contains it or not.
+     */
+    protected static boolean hasAuthority(User user, String authority) {
+
+        if (Objects.isNull(user)) {
+            return false;
+        }
+
+        try {
+            return user.getRole().getPrivileges().stream().map(Privilege::getName)
+                    .anyMatch(privilege -> privilege.equals(authority));
+        } catch (Exception e) {
+            return false;
         }
     }
 
