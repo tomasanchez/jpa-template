@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import com.jpa.controller.BaseController;
 import com.jpa.core.mvc.controller.Controller;
 import org.reflections.Reflections;
 
@@ -30,6 +31,7 @@ public class ControllerLoaderService {
 
         if (instance == null) {
             instance = new ControllerLoaderService();
+            BaseController.getEngine();
         }
 
         return instance;
@@ -111,6 +113,8 @@ public class ControllerLoaderService {
                             }).filter(controller -> !Objects.isNull(controller))
                             .collect(Collectors.toMap(c -> c.getShortName(), c -> c));
                 });
+
+
 
         if (this.controllers.isEmpty()) {
             System.out.println("\033[0;31mNo controllers were found\033[0m");
