@@ -40,3 +40,4 @@ target/**
 /target/
 /bin/
 .vscode/settings.json
+.jshintrc
