@@ -35,7 +35,7 @@ public class AdminController extends BaseController {
     /* =========================================================== */
 
     @GetMapping
-    @Secured(roles = "ROLE_STAFF")
+    @Secured(roles = "ROLE_ADMIN")
     public ModelAndView getPage(Request request, Response response) {
         return getModelAndView();
     }
