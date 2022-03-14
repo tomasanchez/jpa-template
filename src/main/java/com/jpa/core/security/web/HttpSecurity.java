@@ -9,6 +9,7 @@ import com.google.common.net.HttpHeaders;
 import com.jpa.core.security.auth.AuthenticationManager;
 import com.jpa.core.security.auth.AuthorizationManager;
 import com.jpa.core.security.auth.SecurityContext;
+import com.jpa.core.security.filter.SparkAuthorizationFilter;
 import org.eclipse.jetty.http.HttpStatus;
 import lombok.Getter;
 import spark.Filter;
@@ -30,6 +31,8 @@ public class HttpSecurity implements SecurityContext {
     private boolean cors;
 
     private boolean csrf;
+
+    private SparkAuthorizationFilter authorizationFilter;
 
     public HttpSecurity() {}
 
@@ -64,6 +67,11 @@ public class HttpSecurity implements SecurityContext {
 
     public HttpSecurity csrf() {
         this.csrf = true;
+        return this;
+    }
+
+    public HttpSecurity authorizationFilter(SparkAuthorizationFilter filter) {
+        this.authorizationFilter = filter;
         return this;
     }
 

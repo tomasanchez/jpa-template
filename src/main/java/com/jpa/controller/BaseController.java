@@ -18,9 +18,21 @@ import spark.Request;
 import spark.Response;
 
 
-
+/**
+ * Foundational controller.
+ * 
+ * <br>
+ * </br>
+ * 
+ * Common and inheritable methods for all other controllers, including: Model methods and shortcuts;
+ * Router, History handling and Navigation.
+ * 
+ * @author Tomás Sánchez
+ */
 public abstract class BaseController extends Controller
         implements WithGlobalEntityManager, TransactionalOps {
+
+    protected static GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
     /* =========================================================== */
     /* LifeCycle Override Methods -------------------------------- */

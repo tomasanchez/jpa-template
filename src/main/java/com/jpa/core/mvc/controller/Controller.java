@@ -13,6 +13,7 @@ import com.jpa.core.mvc.controller.routing.RoutingFactoryBuilder;
 import com.jpa.core.mvc.model.Model;
 import com.jpa.core.mvc.view.View;
 import com.jpa.core.security.auth.SecurityContext;
+import com.jpa.core.security.web.AuthorizationFactory;
 import com.jpa.core.utils.JsonTransformer;
 import com.jpa.i18n.ResourceBundle;
 import spark.ModelAndView;
@@ -287,6 +288,17 @@ public abstract class Controller {
         // Delete
         routingFactory.createEndpointsFor(DeleteMapping.class, methods);
 
+        onSecureEndpoints();
+    }
+
+    /**
+     * Secures the annotated endpoints.
+     */
+    private void onSecureEndpoints() {
+        AuthorizationFactory authorizationFactory = new AuthorizationFactory();
+        authorizationFactory.setController(this);
+        authorizationFactory.setFilter(getSecurityContext().getAuthorizationFilter());
+        authorizationFactory.secureMethods();
     }
 
 
