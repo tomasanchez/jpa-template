@@ -23,6 +23,24 @@ public abstract class BaseController extends Controller
         implements WithGlobalEntityManager, TransactionalOps {
 
     /* =========================================================== */
+    /* LifeCycle Override Methods -------------------------------- */
+    /* =========================================================== */
+
+    @Override
+    protected void onBeforeBeforeRendering(Request request, Response response) {
+        super.onBeforeBeforeRendering(request, response);
+
+        // When match on Log-In do not update the view model.
+        if (request.matchedPath()
+                .equals(ControllerLoaderService.getService().find("login").getEndPoint())) {
+            return;
+        }
+        // This is used for logged in session.
+        getSharedModel().set("loggedIn", isLogged(request));
+        setCorrespondingViewLinks(request);
+    }
+
+    /* =========================================================== */
     /* Convenience Methods --------------------------------------- */
     /* =========================================================== */
 
@@ -96,6 +114,17 @@ public abstract class BaseController extends Controller
     protected static void setCorrespondingViewLinks(User user) {
         boolean isAdmin = hasAuthority(user, "ROLE_ADMIN");
         boolean isStaff = hasAuthority(user, "ROLE_STAFF");
+        getSharedModel().set("isAdmin", isAdmin).set("isStaff", isStaff);
+    }
+
+    /**
+     * Sets the shared model for link visibility.
+     * 
+     * @param request the HTTP Spark request object from where to obtain session
+     */
+    protected static void setCorrespondingViewLinks(Request request) {
+        boolean isAdmin = hasAuthority(request, "ROLE_ADMIN");
+        boolean isStaff = hasAuthority(request, "ROLE_STAFF");
         getSharedModel().set("isAdmin", isAdmin).set("isStaff", isStaff);
     }
 
@@ -177,8 +206,7 @@ public abstract class BaseController extends Controller
             return false;
         }
 
-        String jwt = request.session()
-                .attribute(request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY));
+        String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
 
         try {
             Authentication authentication = new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt);
