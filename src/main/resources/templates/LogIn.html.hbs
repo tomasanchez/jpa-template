@@ -4,49 +4,83 @@
 {{/partial}}
 
 {{#partial "content"}}
-  <div class="form-signin bg-light container mt-5">
-    <form method="POST" action="{{links.login}}">
-      <img
-        class="mb-4"
-        src="https://sparkjava.com/img/logo.svg"
-        alt="Spark"
-        width="72"
-      />
-      <h1 class="h3 mb-3 fw-normal">{{i18n.signInForm}}</h1>
-      <div class="form-floating">
-        <input
-          name="user"
-          type="text"
-          class="form-control"
-          id="floatingInput"
-          placeholder="name@example.com"
-          value="{{username}}"
-          required="true"
-        />
-        <label for="floatingInput">{{i18n.username}}</label>
+  <div class="container mt-5 align-items-center mx-auto">
+    <div class="col-xl-5 col-md-8 col-xs-10 mx-auto">
+      <div class="row justify-content-center">
+        <form class="p-5" method="POST" action="{{links.login}}">
+          <!-- Form Image -->
+          <div class="container-fluid text-center">
+            <img
+              class="mb-4"
+              src="https://sparkjava.com/img/logo.svg"
+              alt="Spark"
+              width="72"
+            /> 
+            <!-- Sign In Header -->
+            <h1 class="h3 mb-3 fw-normal">{{i18n.signInForm}}</h1>
+          </div>
+
+          <!-- Username Field -->
+          <div class="form-outline mt-2 mb-4">
+            <input
+              name="user"
+              type="text"
+              class="form-control form-control-lg"
+              id="userNameInput"
+              placeholder="name@example.com"
+              value="{{username}}"
+              required="true"
+            />
+            <label class="form-label" for="userNameInput">{{i18n.username}}*</label>
+          </div>
+
+          <!-- Password Input -->
+          <div class="form-outline mt-2 mb-2">
+            <input
+              name="password"
+              type="password"
+              class="form-control form-control-lg {{isValid}}"
+              id="passwordInput"
+              placeholder="Password"
+              required="true"
+            />
+            <label class="form-label" for="passwordInput">{{i18n.password}}*</label>
+            <div id="passWordValidation" class="invalid-feedback">{{i18n.wrongPassword}}</div>
+          </div>
+
+          <div id="showPasswordText" class="form-text mt-3">
+            <i id="showPasswordIcon" class="fas fa-eye" onclick="onShowPassowrd()"></i>
+             {{i18n.showPassword}}
+          </div>
+
+          <div class="form-check mt-4 mb-3">
+            <input class="form-check-input" type="checkbox" value="remember-me" /> 
+            <label class="form-check-label"> {{i18n.rememberMe}} </label>
+          </div>
+
+          <!-- Submit Button - Log In -->
+          <button class="btn btn-primary btn-block mb-4" type="submit">{{i18n.signIn}}</button>
+
+          <!-- 2 column grid layout for inline styling -->
+          <div class="row mb-4">
+            <div class="col-5 d-flex text-center justify-content-center">
+              <a href="#!">{{i18n.forgotPassword}}</a>
+            </div>
+
+            <div class="col-7 text-center justify-content-centerr">
+              <!-- Simple link -->
+              <a href="#!">{{i18n.noAccountSignUp}}</a>
+            </div>
+          </div>
+
+        </form>
       </div>
-      <div class="form-floating">
-        <input
-          name="password"
-          type="password"
-          class="form-control {{isValid}}"
-          id="floatingPassword"
-          placeholder="Password"
-          required="true"
-        />
-        <label for="floatingPassword">{{i18n.password}}</label>
-        <div id="passWordValidation" class="invalid-feedback">{{i18n.wrongPassword}}</div>
-      </div>
-        <div class="checkbox mb-3">
-          <label>
-            <input type="checkbox" value="remember-me" /> {{i18n.rememberMe}}
-          </label>
-        </div>
-        <button class="w-100 btn btn-lg btn-success" type="submit">{{i18n.signIn}}</button>
-        <a class="w-100 btn btn-lg btn-light" href="/signup"> {{i18n.signUp}}</a>
-        <p class="mt-5 mb-3 text-muted">&copy; 2021</p>
-    </form>
+    </div>
   </div>
 {{/partial}}
 
-{{> layouts/Bootstrap-Navbar.html.hbs }}
+{{#partial "customJS"}}
+  <script type="text/javascript" src="./script/LogIn.js"></script>
+{{/partial}}
+
+{{> layouts/MDB.html.hbs }}
