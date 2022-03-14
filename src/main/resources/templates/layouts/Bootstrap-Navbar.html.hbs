@@ -84,28 +84,23 @@
                 href="{{links.home}}"
               >{{i18n.home}}</a>
             </li>
+            <!-- Showed when user is logged in -->
             {{#if loggedIn}}
-            <!-- User -->
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                aria-current="page"
-                href="#"
-              >Role User</a>
-            </li>
-            {{#if isAdmin}}
+
+
             <!-- Showed when user is Admin -->
+            {{#if isAdmin}}
             <li class="nav-item">
               <a
-                class="nav-link"
+                class="nav-link {{nav.admin}}"
                 aria-current="page"
-                href="#"
+                href="/admin"
               >Role Admin</a>
             </li>
             {{/if}}
 
-            {{#if isStaff}}
             <!-- Showed when user is Staff -->
+            {{#if isStaff}}
             <li class="nav-item">
               <a
                 class="nav-link"
@@ -115,6 +110,14 @@
             </li>
             {{/if}}
 
+            <!-- Showed when logged in -->
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                aria-current="page"
+                href="#"
+              >Role User</a>
+            </li>
             {{else}}
             <!-- Showed when user has not logged in -->
             {{/if}}
