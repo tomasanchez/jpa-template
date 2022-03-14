@@ -32,6 +32,9 @@ public class User extends PersistentEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "profile_url")
+    private String profileUrl;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinTable(name = "users_role",
             joinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),

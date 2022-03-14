@@ -166,10 +166,10 @@
               aria-expanded="false"
             >
               <img
-                src="https://github.com/tomasanchez.png"
+                src="{{user.profileUrl}}"
                 alt="{{user.uname}}"
-                width="35"
-                height="35"
+                width="42.5"
+                height="42.5"
                 class="rounded-circle"
                 onerror="this.src='https://avatars.githubusercontent.com/u/4492795?s=200&v=4'"
               />
@@ -204,8 +204,10 @@
             </ul>
           </div>
         {{else}}
+          <!-- Sign Up -->
+          <a type="button" class="btn btn-primary me-2 {{nav.register}}" href="{{links.register}}" data-mdb-ripple-color="light">{{i18n.signUp}}</a>
           <!-- Log In -->
-          <a type="button" class="btn btn-outline-primary {{nav.login}}" href="{{links.login}}" data-mdb-ripple-color="light">{{i18n.logIn}}</a>
+          <a type="button" class="btn btn-outline-primary ms-2 {{nav.login}}" href="{{links.login}}" data-mdb-ripple-color="light">{{i18n.logIn}}</a>
         {{/if}}
         </div>
       <!-- Right elements -->

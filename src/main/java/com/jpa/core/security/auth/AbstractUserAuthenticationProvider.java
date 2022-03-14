@@ -43,7 +43,7 @@ public abstract class AbstractUserAuthenticationProvider implements Authenticati
     @Override
     public Authentication authenticate(Authentication authentication) {
 
-        String username = determineUsername(authentication);
+        String username = determineUsername(authentication).trim();
         String credentials = (String) authentication.getCredentials();
         UserDetails user = null;
 

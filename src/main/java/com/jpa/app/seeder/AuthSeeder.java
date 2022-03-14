@@ -77,9 +77,15 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
     public void generateUsers() {
 
         withTransaction(() -> {
-            createUserIfNotExists("admin", "admin", roleRepository.findByName("ADMIN").get());
-            createUserIfNotExists("staff", "staff", roleRepository.findByName("STAFF").get());
-            createUserIfNotExists("user", "user", roleRepository.findByName("USER").get());
+            createUserIfNotExists("admin", "admin",
+                    "https://images.pexels.com/photos/2726111/pexels-photo-2726111.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                    roleRepository.findByName("ADMIN").get());
+            createUserIfNotExists("staff", "staff",
+                    "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                    roleRepository.findByName("STAFF").get());
+            createUserIfNotExists("user", "user",
+                    "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+                    roleRepository.findByName("USER").get());
         });
 
     }
@@ -136,14 +142,16 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
      * 
      * @param username The username to be used.
      * @param password a raw password.
+     * @param profile an image profile
      * @param role a new Role
      * @return a new User or retrieves the existing one
      */
-    public User createUserIfNotExists(String username, String password, Role role) {
+    public User createUserIfNotExists(String username, String password, String profile, Role role) {
         return userRepository.findByUsername(username).orElseGet(() -> {
 
             User user = new User(username, new BCryptPasswordEncoder().encode(password));
             user.setRole(role);
+            user.setProfileUrl(profile);
 
             return userRepository.createEntity(user);
         });

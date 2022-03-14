@@ -1,13 +1,13 @@
 
 {{#partial "pageTitle"}}
-  {{i18n.loginPageTitle}}
+  {{i18n.registerPageTitle}}
 {{/partial}}
 
 {{#partial "content"}}
   <div class="container mt-5 align-items-center mx-auto">
     <div class="col-xl-5 col-md-8 col-xs-10 mx-auto">
       <div class="row justify-content-center">
-        <form class="p-5" method="POST" action="{{links.login}}">
+        <form class="p-5" method="POST" action="{{links.register}}">
           <!-- Form Image -->
           <div class="container-fluid text-center">
             <img
@@ -17,21 +17,22 @@
               width="72"
             /> 
             <!-- Sign In Header -->
-            <h1 class="h3 mb-3 fw-normal">{{i18n.signInForm}}</h1>
+            <h1 class="h3 mb-3 fw-normal">{{i18n.signUpForm}}</h1>
           </div>
 
           <!-- Username Field -->
           <div class="form-outline mt-2 mb-4">
             <input
-              name="user"
+              name="username"
               type="text"
-              class="form-control form-control-lg"
+              class="form-control form-control-lg {{isValidUser}}"
               id="userNameInput"
               placeholder="name@example.com"
               value="{{username}}"
               required="true"
             />
             <label class="form-label" for="userNameInput">{{i18n.username}}*</label>
+            <div id="passWordValidation" class="invalid-feedback">{{i18n.userAlreadyExists}}</div>
           </div>
 
           <!-- Password Input -->
@@ -39,7 +40,7 @@
             <input
               name="password"
               type="password"
-              class="form-control form-control-lg {{isValid}}"
+              class="form-control form-control-lg {{isValidPassword}}"
               id="passwordInput"
               placeholder="Password"
               required="true"
@@ -48,28 +49,36 @@
             <div id="passWordValidation" class="invalid-feedback">{{i18n.wrongPassword}}</div>
           </div>
 
-          <div id="showPasswordText" class="form-text mt-3">
-            <i id="showPasswordIcon" class="fas fa-eye" onclick="onShowPassowrd()"></i>
-             {{i18n.showPassword}}
+          <!-- Password Input -->
+          <div class="form-outline mt-2 mb-2">
+            <input
+              name="confirmPassword"
+              type="password"
+              class="form-control form-control-lg {{isValidPassword}}"
+              id="confirmPassword"
+              placeholder="Password"
+              required="true"
+            />
+            <label class="form-label" for="confirmPassword">{{i18n.confirmPassword}}*</label>
+            <div id="passWordValidation" class="invalid-feedback">{{i18n.wrongPassword}}</div>
           </div>
 
-          <div class="form-check mt-4 mb-3">
-            <input class="form-check-input" type="checkbox" value="remember-me" /> 
-            <label class="form-check-label"> {{i18n.rememberMe}} </label>
+          <div class="form-check mt-3 mb-3">
+            <input class="form-check-input" type="checkbox" value="" id="agreeCheck"/> 
+            <label class="form-check-label" for="agreeCheck">{{i18n.agreeCheck}}</label>
           </div>
 
           <!-- Submit Button - Log In -->
-          <button class="btn btn-primary btn-block mb-4" type="submit">{{i18n.signIn}}</button>
+          <button class="btn btn-primary btn-block mb-4" type="submit">{{i18n.signUp}}</button>
 
           <!-- 2 column grid layout for inline styling -->
           <div class="row mb-4">
-            <div class="col-5 d-flex text-center justify-content-center">
-              <a href="#!">{{i18n.forgotPassword}}</a>
+            <div class="col-4 d-flex text-center justify-content-center">
             </div>
 
-            <div class="col-7 text-center justify-content-centerr">
+            <div class="col-8 text-center justify-content-centerr">
               <!-- Simple link -->
-              <a href="{{links.register}}">{{i18n.noAccountSignUp}}</a>
+              <a href="{{links.login}}" >{{i18n.accountSignIn}}</a>
             </div>
           </div>
 

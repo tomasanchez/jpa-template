@@ -94,7 +94,7 @@ public class LogInController extends BaseController {
 
 
     private void onSuccessfulAuthentication(Request request, Response response) {
-        getSharedModel().set("loggedIn", true);
+        getSharedModel().set("loggedIn", true).set("user", onRetrieveUser(request).orElse(null));
         navTo(response, "home");
     }
 
