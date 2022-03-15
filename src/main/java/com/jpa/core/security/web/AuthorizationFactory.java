@@ -58,7 +58,7 @@ public class AuthorizationFactory {
             return;
         }
 
-        secureMapping(getMapping.path(), authorities);
+        secureMapping(getMapping.path(), "GET", authorities);
 
     }
 
@@ -70,7 +70,7 @@ public class AuthorizationFactory {
             return;
         }
 
-        secureMapping(getMapping.path(), authorities);
+        secureMapping(getMapping.path(), "POST", authorities);
 
     }
 
@@ -82,7 +82,7 @@ public class AuthorizationFactory {
             return;
         }
 
-        secureMapping(getMapping.path(), authorities);
+        secureMapping(getMapping.path(), "PUT", authorities);
 
     }
 
@@ -94,19 +94,24 @@ public class AuthorizationFactory {
             return;
         }
 
-        secureMapping(getMapping.path(), authorities);
+        secureMapping(getMapping.path(), "DELETE", authorities);
 
     }
 
 
-    private void secureMapping(String path, Collection<GrantedAuthority> authorities) {
+    private void secureMapping(String path, String requestMethod,
+            Collection<GrantedAuthority> authorities) {
 
         if (path == null || path.isEmpty()) {
             path = controller.getEndPoint();
         }
 
         Spark.before(path, (req, res) -> {
-            filter.authorizationFilter(req, res, authorities);
+
+            if (req.requestMethod().equals(requestMethod)) {
+                filter.authorizationFilter(req, res, authorities);
+            }
+
         });
     }
 
