@@ -9,10 +9,16 @@ import com.jpa.repositories.RoleRepository;
 import com.jpa.repositories.UserRepository;
 import lombok.Getter;
 
+/**
+ * User transactional operations service.
+ * 
+ * @author Tomás Sánchez
+ */
 @Getter
 public class UserService extends TransactionalService {
 
     private UserRepository userRepository = new UserRepository();
+
     private RoleRepository roleRepository = new RoleRepository();
 
     /**

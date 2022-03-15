@@ -3,17 +3,16 @@ package com.jpa.controller;
 import static spark.Spark.halt;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import com.jpa.core.mvc.controller.Controller;
 import com.jpa.core.security.auth.Authentication;
-import com.jpa.core.security.auth.UsernamePasswordAuthenticationToken;
 import com.jpa.core.security.userdetails.GrantedAuthority;
 import com.jpa.core.services.ControllerLoaderService;
 import com.jpa.core.utils.JwtMapper;
 import com.jpa.model.user.Privilege;
 import com.jpa.model.user.User;
 import com.jpa.repositories.UserRepository;
-import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
-import org.uqbarproject.jpa.java8.extras.transaction.TransactionalOps;
+import com.jpa.services.UserService;
 import spark.Request;
 import spark.Response;
 
@@ -29,8 +28,7 @@ import spark.Response;
  * 
  * @author Tomás Sánchez
  */
-public abstract class BaseController extends Controller
-        implements WithGlobalEntityManager, TransactionalOps {
+public abstract class BaseController extends Controller {
 
     protected static GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
@@ -141,6 +139,24 @@ public abstract class BaseController extends Controller
     }
 
     /**
+     * Retrieves a model User from the request object.
+     * 
+     * @param request the HTTP Spark request object
+     * @return an optional of user
+     */
+    protected static Optional<User> onRetrieveUser(Request request) {
+        try {
+
+            Authentication authentication =
+                    retrieveAuthentication(request).orElseThrow(IllegalStateException::new);
+            return new UserService().findByUsername(authentication.getName());
+
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    /**
      * Reloads user data from the database.
      * 
      * @return the user updated.
@@ -169,15 +185,10 @@ public abstract class BaseController extends Controller
      */
     protected static boolean isLogged(Request request) {
 
-        String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
-
-        if (Objects.isNull(jwt)) {
-            return false;
-        }
-
         try {
-            UsernamePasswordAuthenticationToken auth =
-                    new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt);
+
+            Authentication auth =
+                    retrieveAuthentication(request).orElseThrow(IllegalArgumentException::new);
 
             return getSecurityContext().getAuthenticationManager().authenticate(auth)
                     .isAuthenticated();
@@ -213,17 +224,10 @@ public abstract class BaseController extends Controller
      * @return wether the authentication has the authority or not
      */
     protected static boolean hasAuthority(Request request, String authority) {
-
-        if (!isLogged(request)) {
-            return false;
-        }
-
-        String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
-
         try {
-            Authentication authentication = new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt);
 
-            return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+            return retrieveAuthentication(request).orElseThrow(IllegalArgumentException::new)
+                    .getAuthorities().stream().map(GrantedAuthority::getAuthority)
                     .anyMatch(grantedAuthority -> grantedAuthority.equals(authority));
 
         } catch (Exception e) {
@@ -250,6 +254,23 @@ public abstract class BaseController extends Controller
         } catch (Exception e) {
             return false;
         }
+    }
+
+    /**
+     * Retrieves an Authentication from a Request object.
+     * 
+     * @param request the HTTP Spark request object
+     * @return an Optional of Authentication
+     */
+    private static Optional<Authentication> retrieveAuthentication(Request request) {
+
+        try {
+            String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
+            return Optional.of(new JwtMapper().retrieveUserAuthTokekenFromJWT(jwt));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+
     }
 
 }
