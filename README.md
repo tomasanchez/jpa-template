@@ -19,6 +19,17 @@
   - [Going Further](#going-further)
     - [Routing](#routing)
     - [Request Mapping](#request-mapping)
+    - [TS' Spark Security](#ts-spark-security)
+      - [Authentication](#authentication)
+        - [AuthenticationManager](#authenticationmanager)
+        - [AuthenticationProvider](#authenticationprovider)
+        - [UserDetailService](#userdetailservice)
+      - [Authorization](#authorization)
+        - [Authorization Manager](#authorization-manager)
+        - [GrantedAuthority](#grantedauthority)
+        - [Spark Authorization Filter](#spark-authorization-filter)
+      - [Authorities](#authorities)
+      - [Securing Endpoints](#securing-endpoints)
     - [Internationalization](#internationalization)
   - [License](#license)
 
@@ -683,6 +694,226 @@ public class UsersControlller extends Controller{
 > **RECOMENDATION**: If you need to delete/update from a **`form`** a easy way I found is to make a `POST` with a flag which indicates wheter it is a post, a delete or an update. This wil allow you to return a `ModelAndView`. Using `JavaScript`,  `fetch()` an when returning reload the window, this will reflect the changes in the `ViewModel`, but this requires preventing form default behaviour and using a custom implementation. 
 
 <br></br>
+
+### TS' Spark Security
+
+Tomas Sanchez's Spark Security implementation was designed inspired on [Spring Security](https://spring.io/projects/spring-security)
+
+![Spring Security](https://www.tutorialspoint.com/spring_security/images/components_of_spring_security_architecture.jpg)
+
+Read more about Spring Security from the [source](https://www.tutorialspoint.com/spring_security/spring_security_form_login_with_database.htm).
+
+<br></br>
+
+Following this, idea the Spark Architecture:
+
+![Spark Security](assets/security.svg)
+
+#### Authentication
+
+`Authentication` is the process of verifying who someone is.
+
+There is a provided interface to express this:
+
+```java
+public interface Authentication extends Principal, Serializable {
+
+    /**
+     * Indicates the authorities that the principal has been granted.
+     * 
+     * @return the authorities granted to the principal or an empty collection.
+     */
+    Collection<? extends GrantedAuthority> getAuthorities();
+
+    /**
+     * Usually a password, but could be anything relevant to the <code>AuthenticationManager</code>.
+     * Callers are expected to populate the credentials.
+     * 
+     * @return the credentials that prove the identity of the <code>Principal</code>
+     */
+    Object getCredentials();
+
+    /**
+     * The identity of the principal being authenticated. In the case of an authentication request
+     * with username and password, this would be the username.
+     * 
+     * @return the principal identity.
+     */
+    Object getPrincipal();
+
+    /**
+     * Indicates wether the authentication is validated or not.
+     * 
+     * @return true if the token has been authenticated
+     */
+    boolean isAuthenticated();
+
+    /**
+     * 
+     * @param isAuthenticated <code>true</code> if the token should be trusted (which may result in
+     *        an exception) or <code>false</code> if the token should not be trusted
+     * 
+     */
+    void setAuthenticated(boolean isAuthenticated);
+}
+```
+
+In this design, the `AuthenticationProvider` produces `Authentications` and the `AuthorizationManager` consumes them.
+
+##### AuthenticationManager
+
+This interface incapsulates the logic behind the authentication process. It is the main strategy. It uses the lone method `authenticate()` to authenticate an `Authentication` object. 
+
+##### AuthenticationProvider
+
+It is an implementation of the `AuthenticationManager`, so this must support the method `authenticate()`. With this, the process of authentication is started. It has the responsibility of retrieving an `UserDetail`. **NOTE**: this user detail is not the one provided in the `model` package, when developing your own `User` class you must provide an specific adapter to transform your `User class` to `UserDetail`.
+
+If the user is not found, it can throw a `UsernameNotFoundException`. On the other hand, if the user is found, then the authentication details of the user are used to authenticate the user, creating an `Authentication` object.
+
+This seed **provides you with an implementation** the `SimpleAuthenticationProvider` class, located in the `security.auth` package, which utilizes the default password encoding, the `BCryptPasswordEncoder`, based on the [`bcrypt`](https://en.wikipedia.org/wiki/Bcrypt) password-hashing function, this means it is the responsible of **matching passwords**.
+
+This provided interface allows you to develop your custom `Authentication` process. In this seed implements a JSON Web Token (JWT) Authentication.
+
+##### UserDetailService
+
+This class is should be an specific implementation of the mapping from your `User` model entity to the utilized `UserDetail`. It is the bridge between your database and the authentication process.
+
+Should implement the lone method of `loadUserByUsername()`, which retrieves an User of your model and transforms it into a `UserDetail`.
+
+This seed **provides you with an implementation** the `SimpleUserService`, located in the `security.services` package.
+
+#### Authorization
+
+`Authorization` is the process of verifying what specific applications, files, and data a user has access to.
+
+##### Authorization Manager
+
+Similar to `AuthenticationManager`, this interface incapsulates the authorization process. Its interface is the method `authorize()` which verifies wether an `Authentication` is valid or not.
+
+##### GrantedAuthority
+
+An `UserDetails` has a Collection of `GrantedAuthority` objects, these determine wether the user has access to an specified resource.
+
+This is a simple interface with the sole method of `getAuthority()`.
+
+```java
+/**
+ * A representation of an authority given to an user.
+ */
+public interface GrantedAuthority extends Serializable {
+
+    /**
+     * An authority must be represented by a string.
+     * 
+     * @return the granted authority
+     */
+    String getAuthority();
+}
+```
+
+##### Spark Authorization Filter
+
+It is a Spark specific implementation of before Filters for the autorization process.
+
+```java
+/**
+ * Generic Interface for authorization filter in Spark.
+ * 
+ * @author Tomás Sánchez
+ */
+public interface SparkAuthorizationFilter {
+
+    /**
+     * Session Authorization filter.
+     * 
+     * @param request the Spark HTTP request object
+     * @param response the Spark HTTP response object
+     * @param authorities a list of required authorities
+     * @throws UnauthorizedException when no session was found or token has expired.
+     * @throws ForbiddenException when current user is not authorized
+     */
+    public void authorizationFilter(Request request, Response response,
+            Collection<GrantedAuthority> authorities);
+}
+```
+
+When there is no session or it has expired, `UnauthorizedException` is thrown. When the current user is not authorized, a `ForbiddenException` is thrown. **It is the responsibility of the developer to `catch` these exceptions with `Spark.exception()` handler**.
+
+**This project includes** an implementation for using a JWT in a Spark Session, `SessionJwtAuthorizationFilter`, and **a global exception handler** for both `UnauthorizedException` and `ForbiddenException`.
+
+#### Authorities
+
+There is a hierarchical `Role`-`Privilege` system, in which a `Role` has many `Privileges` (many-to-many relationship).
+
+This was based on [Baeldung's Spring Security – Roles and Privileges](https://www.baeldung.com/role-and-privilege-for-spring-security-registration)
+
+![Role-explosion](https://www.baeldung.com/wp-content/uploads/2015/01/role-explosion.jpg)
+
+For simplification, an `User` has only one `Role` (Many-To-One), and these Roles are organized hirearchally resulting in:
+
+![Role-Hirearchy](https://www.baeldung.com/wp-content/uploads/2015/01/role-h.jpg)
+
+So, assigning the **role ADMIN automatically gives the user the privileges of both the STAFF and USER roles**.
+
+However, a user with the role STAFF can only perform STAFF and USER role actions.
+
+In addition to reflect this on the DB, each `Role` has an intrinsic `Privilege` which results in a `ROLE_<ROLE_NAME>` as a `Privilege`.
+
+Eg. `Admin: Role`, has a `ROLE_ADMIN: Privilege`
+
+#### Securing Endpoints
+
+There is an `@interface` provided to easily restric access to different request handler methods, `@Secured`.
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Secured {
+
+    /**
+     * Allow access only to given roles or authorities. When no authorities are set, allows access
+     * only when session is authenticated.
+     * 
+     * <br>
+     * </br>
+     * 
+     * Recommended to use a role hirearchy to better organization.
+     */
+    String[] roles() default {};
+}
+```
+
+Eg. `AdminController` has a `View` which should be only accessible for users with the `ROLE_ADMIN` authority.
+
+```java
+public class AdminController extends Controller {
+
+    /* =========================================================== */
+    /* Lifecycle methods ----------------------------------------- */
+    /* =========================================================== */
+    
+    // ...
+
+    /* =========================================================== */
+    /* Request Handling ------------------------------------------ */
+    /* =========================================================== */
+
+    @GetMapping
+    @Secured(roles = "ROLE_ADMIN")
+    public ModelAndView index(Request request, Response response) {
+        return getModelAndView();
+    }
+}
+```
+
+
+`@Secured` annotattion **MUST** be used along with a `@<Method>Mapping` anotattion, because this last one determines the `path` where the `SparkAuthorizationFilter` will be added. 
+
+In this case, `@Secured` forbids `GET` request on the `/admin` path to all `User` entities which **DO NOT** have the `Privilege` of `ROLE_ADMIN`.
+
+**NOTE**: All other request handlers for **different methods** will not be afected. Eg. to restricts `POST` request, another `@Secured` anotattion should be used alongside the `@PostMapping`. 
+
+<hr/>
 
 ### Internationalization
 
