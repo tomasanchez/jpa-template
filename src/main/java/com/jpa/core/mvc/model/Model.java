@@ -74,16 +74,33 @@ public class Model {
         return this;
     }
 
+    /**
+     * Joins two models into one.
+     * 
+     * @param other a model to be joined
+     * @return a model joined with other.
+     */
     public Model join(Model other) {
         this.model.putAll(other.model);
         return this;
     }
 
+    /***
+     * Replaces all values according to the specified function.
+     * 
+     * @param function a bi-consumer function for Keys and Values
+     * @return the model itself
+     */
     public Model replaceAll(BiFunction<? super String, ? super Object, ? extends Object> function) {
         model.replaceAll(function);
         return this;
     }
 
+    /**
+     * Retrieves all properties into a Map.
+     * 
+     * @return a map with all the current properties in the model
+     */
     public Map<String, Object> getData() {
         Map<String, Object> finalModel = new HashMap<String, Object>();
         finalModel.putAll(model);
