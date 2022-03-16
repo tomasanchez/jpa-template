@@ -35,11 +35,7 @@ public class RegisterController extends BaseController {
     }
 
     @Override
-    protected void onAfterRendering(Request request, Response response) {
-        // Clean model
-        toggleUserValidation(true);
-        togglePasswordValidation(true);
-    }
+    protected void onAfterRendering(Request request, Response response) {}
 
     /* =========================================================== */
     /* Request Handling ------------------------------------------ */

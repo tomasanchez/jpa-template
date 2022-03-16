@@ -1,6 +1,7 @@
 package com.jpa.core.mvc.controller;
 
 import static spark.Spark.after;
+import static spark.Spark.afterAfter;
 import static spark.Spark.before;
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -45,11 +46,12 @@ public abstract class Controller {
 
     public Controller() {
         setView(new View(getName()));
-        onStartSharedModel();
+        onSetNavigationSharedModel();
         before(getEndPoint(), this::onBeforeBeforeRendering);
         onInitEndpoints();
         onInit();
         after(getEndPoint(), this::onAfterRendering);
+        afterAfter(getEndPoint(), this::onAfterAfterRendering);
     }
 
     /**
@@ -151,8 +153,8 @@ public abstract class Controller {
     /**
      * Sets a controller view.
      * 
-     * @param view
-     * @return
+     * @param view a HandleBars' View object.
+     * @return the controller.
      */
     public Controller setView(View view) {
         this.view = view;
@@ -224,7 +226,9 @@ public abstract class Controller {
 
 
     /**
-     * This method is called every time a view is rendered, is shared between all the controllers.
+     * This method is called every time a view is rendered, before the onBeforeRendering filter, is
+     * shared between all the controllers. In this implementation it is used to update the
+     * Accept-Language, and update the navigational model.
      * 
      * @param request the Spark HTTP request object
      * @param response the Spark HTTP response object
@@ -257,6 +261,17 @@ public abstract class Controller {
      * @param response the spark HTTP response object
      */
     protected abstract void onAfterRendering(Request request, Response response);
+
+    /**
+     * This method is called every time the View is rendered, after the onAfterRendering filter. In
+     * this implementation it is used to destroy the previous rendered model.
+     * 
+     * @param request the Spark HTTP request object
+     * @param response the Spark HTTP response object
+     */
+    protected void onAfterAfterRendering(Request request, Response response) {
+        getView().setModel(new Model());
+    }
 
     /* =========================================================== */
     /* Internal methods ------------------------------------------ */
@@ -305,7 +320,7 @@ public abstract class Controller {
     /**
      * Shares essential data for the application view model.
      */
-    private void onStartSharedModel() {
+    private void onSetNavigationSharedModel() {
 
         // Binds navigation for nav-links highlighting, set to "active" when in the current link.
         ((Model) getSharedModel().get(NAV_MODEL_NAME)).set(getShortName(), "");

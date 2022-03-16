@@ -31,10 +31,7 @@ public class LogInController extends BaseController {
     }
 
     @Override
-    protected void onAfterRendering(Request request, Response response) {
-        // Clean view model invalid password class
-        getView().getModel().set("isValid", "").set("username", "");
-    }
+    protected void onAfterRendering(Request request, Response response) {}
 
     /* =========================================================== */
     /* Request Handling ------------------------------------------ */
