@@ -1,4 +1,4 @@
-package com.jpa.i18n;
+package com.jpa.core.i18n;
 
 import java.io.IOException;
 import java.io.InputStream;

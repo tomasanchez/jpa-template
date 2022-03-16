@@ -2,7 +2,7 @@ package com.jpa.i18n;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
+import com.jpa.core.i18n.ResourceBundle;
 import org.junit.jupiter.api.Test;
 
 public class ResourceBundleTest {
