@@ -97,8 +97,8 @@ public class RegisterController extends BaseController {
      * 
      * @param valid if true sets to neutral, otherwise sets to invalid
      */
-    private static void toggleUserValidation(boolean valid) {
-        getSharedModel().set("isValidUser", valid ? "" : "is-invalid");
+    private void toggleUserValidation(boolean valid) {
+        getView().getModel().set("isValidUser", valid ? "" : "is-invalid");
     }
 
     /**
@@ -106,8 +106,8 @@ public class RegisterController extends BaseController {
      * 
      * @param valid if true sets to neutral, otherwise sets to invalid
      */
-    private static void togglePasswordValidation(boolean valid) {
-        getSharedModel().set("isValidPassword", valid ? "" : "is-invalid");
+    private void togglePasswordValidation(boolean valid) {
+        getView().getModel().set("isValidPassword", valid ? "" : "is-invalid");
     }
 
 }
