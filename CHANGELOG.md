@@ -2,6 +2,52 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/tomasanchez/jpa-template/compare/v1.1.1...v2.0.0) (2022-03-16)
+
+
+### Features
+
+* add authentication bases ([7ebbac2](https://github.com/tomasanchez/jpa-template/commit/7ebbac212256eb5cefb4676c30aa78cce434ca40))
+* add automatic model reset ([ca03f8d](https://github.com/tomasanchez/jpa-template/commit/ca03f8dede3ded08c6f6e51ac2b1fb35c18812ef))
+* add config support ([d273ce1](https://github.com/tomasanchez/jpa-template/commit/d273ce1653ee53824ca8d9ec7b9362f142930ad7))
+* add exceptions related to auth ([5681429](https://github.com/tomasanchez/jpa-template/commit/5681429215e87b5d754bb435460387a8a3f65554))
+* add generic lambda functional interface ([e3ff0b8](https://github.com/tomasanchez/jpa-template/commit/e3ff0b89dda3310e0a4770b238f60455b3a64d6d))
+* add Jwt Session authentication ([2fc944d](https://github.com/tomasanchez/jpa-template/commit/2fc944ddf75233c4be00be7d6b1973f2a126cfa7))
+* add JWT support ([a8a2ea4](https://github.com/tomasanchez/jpa-template/commit/a8a2ea4c8d00b9d6a8e18a104f5f06f242072596))
+* add media type constants ([6653285](https://github.com/tomasanchez/jpa-template/commit/6653285ad2319bdc5945e0356154d83fc22140ac))
+* add password encoder ([38bba75](https://github.com/tomasanchez/jpa-template/commit/38bba7594c19f620a5839f76d846483addf4cddb))
+* add security user ([536d996](https://github.com/tomasanchez/jpa-template/commit/536d996e863ebaac194cb903693de28d57caee35))
+* add simple implementations ([5fa3f41](https://github.com/tomasanchez/jpa-template/commit/5fa3f41ee8340a5041652b08f3d654f42e6dc0d1))
+* add user-role-privilege seeder ([4fba594](https://github.com/tomasanchez/jpa-template/commit/4fba594785d3b07b5270a9283b0361dd7351ae53))
+* admin access demo ([764790c](https://github.com/tomasanchez/jpa-template/commit/764790caa2f7df920b6bec49d26a44f246ba87cd))
+* annotation mapping ([3361a05](https://github.com/tomasanchez/jpa-template/commit/3361a05e2f515c9e6e7072d28a9fb850b49df95c))
+* **auth:** add auth implementations ([dbf70b5](https://github.com/tomasanchez/jpa-template/commit/dbf70b546212dc236f67b00cdfa899fed5e0bca4))
+* **configuration:** web/loading implementation ([4f524c3](https://github.com/tomasanchez/jpa-template/commit/4f524c388c8a95f7fde9b290ffb1059463a9721b))
+* **crypto:** add BCrypt hashing ([debbe62](https://github.com/tomasanchez/jpa-template/commit/debbe623ae1b3acd4ad13625bc045d98a2deb267))
+* implements authentication manager ([47a36b4](https://github.com/tomasanchez/jpa-template/commit/47a36b47bc0caf6281aba0a30e2c61afc31022b6))
+* **model:** generic role-privilege based authorization ([a2a1a39](https://github.com/tomasanchez/jpa-template/commit/a2a1a3994d9a9d1ec7b90d13d0b6ec9743834995))
+* **mvc:** user registration ([ab7a765](https://github.com/tomasanchez/jpa-template/commit/ab7a76577692227f26878e9d76dd928740165a10))
+* **repository:** user-role-privilege update ([de338e9](https://github.com/tomasanchez/jpa-template/commit/de338e95c82812a8fd24861603d7f96d92b04d2c))
+* secure endpoints with [@interface](https://github.com/interface) ([2c1925d](https://github.com/tomasanchez/jpa-template/commit/2c1925dd448014c0195cbed5c43e67ba776aa19b))
+* using roles ([cde34be](https://github.com/tomasanchez/jpa-template/commit/cde34bee23c58035b94ba19547f8678b685ad683))
+
+
+### Bug Fixes
+
+* **controller:** i18n update ([e0ed356](https://github.com/tomasanchez/jpa-template/commit/e0ed356d36b53274e65ee7bb9216dfc9a591d1bf))
+* **core:** endpoint to lower case ([ab37b64](https://github.com/tomasanchez/jpa-template/commit/ab37b649734a292aeb0efd59811a630cb21fe0d7))
+* empty optional ([82fa91c](https://github.com/tomasanchez/jpa-template/commit/82fa91c9bc083d454547c27c6eb7bce38c259ca4))
+* entity not found exception ([4c6f640](https://github.com/tomasanchez/jpa-template/commit/4c6f6405209b1a8f74c776fbace6f621d4613e4d))
+* filter only when match request method ([2d1402b](https://github.com/tomasanchez/jpa-template/commit/2d1402bf8b1a75629489bfd0fa835cda5def11f8))
+* **i18n:** utf-8 ([4946d94](https://github.com/tomasanchez/jpa-template/commit/4946d9492ce7b8f6c96bcd6d1e69702a064d67f3))
+* **jwt:** null roles ([9c2ae5a](https://github.com/tomasanchez/jpa-template/commit/9c2ae5afbdf78406a46c99d1d506c55d44afeb1e))
+* load controller package ([fb5af99](https://github.com/tomasanchez/jpa-template/commit/fb5af9975ad0b0a8f56467aabba3a2e7d8943aff))
+* print ([da883b1](https://github.com/tomasanchez/jpa-template/commit/da883b15d7b8f542b785065edca0b070e15de1fe))
+* query parameter ([f37842f](https://github.com/tomasanchez/jpa-template/commit/f37842fa3ebcb75b89f485f6b91fd4f87f3a3f71))
+* removed unnessary behaviour ([009af47](https://github.com/tomasanchez/jpa-template/commit/009af47efea214e73272c77f828975813c8f5baf))
+* update to recognize in token password ([7d2ec21](https://github.com/tomasanchez/jpa-template/commit/7d2ec21bc7781c79e70b29f4d79b8574bda4e745))
+* wrong principal ([5c4e9c1](https://github.com/tomasanchez/jpa-template/commit/5c4e9c144fced20a43c5f6c46bece0e8e993c52b))
+
 ### [1.1.1](https://github.com/tomasanchez/jpa-template/compare/v1.1.0...v1.1.1) (2021-12-11)
 
 

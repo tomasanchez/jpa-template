@@ -1,6 +1,6 @@
 {
   "name": "jpa-tseed",
-  "version": "1.1.1",
+  "version": "2.0.0",
   "description": "A Spark micro framework seed by Tomás Sánchez",
   "main": "index.js",
   "repository": "https://github.com/tomasanchez/jpa-template.git",
