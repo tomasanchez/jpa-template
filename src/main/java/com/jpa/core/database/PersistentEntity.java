@@ -1,15 +1,20 @@
 package com.jpa.core.database;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +36,16 @@ public abstract class PersistentEntity implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private String id;
 
+
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "create_date")
+    private Date createDate;
+
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modify_date")
+    private Date modifyDate;
 
     /**
      * Converts an entity to JSON representation.
