@@ -3,6 +3,7 @@
 - [T Sanchez's Spark Seed](#t-sanchezs-spark-seed)
   - [Spark](#spark)
   - [About this seed](#about-this-seed)
+    - [Features](#features)
   - [Getting Started](#getting-started)
     - [**How does it all work?** TLDR:](#how-does-it-all-work-tldr)
     - [**What do I have to do?** / **Quick Start**](#what-do-i-have-to-do--quick-start)
@@ -50,6 +51,31 @@ The seed provides a minimal set up to arrage your project so you can create a we
 If you are developing the System Design assignment I highly recommend taking a look at this seed, it will provide a good inspiration and stating point.
 
 __DISCLAIMER__: using this seed __DOES NOT__ guarantee passing the assignment, nor developers account for responsibility in case of wrong usage of interfaces provided.
+
+### Features
+
+- Project structure: a guideline and convention to better organization.
+- Model View Controller pattern: you don't have to code a MVC design yourself.
+  - Automatic instantiation and initialization of controllers.
+  - Views are automatically binded to a controller.
+  - Example controllers provided.
+  - Base foundational controller with convenience methods.
+- Database
+  - Good practices
+  - Persistent entity provided for entity standarization.
+  - Crud repository interface
+  - Transactional services example
+- Front End Templates: easily to extend with HandleBars.
+  - Distinguish your project with Material Design for Bootstrap (MDB)
+  - Automatic Navigation activation.
+  - In model endpoints.
+  - User profile & roles automatic Navbar handling.
+  - Internationalization support.
+- Security
+  - User - Role - Privileges
+  - Log In and Register
+  - Session token
+  - Easy to secure endpoints with @Secured anotattion
 
 <br></br>
 
