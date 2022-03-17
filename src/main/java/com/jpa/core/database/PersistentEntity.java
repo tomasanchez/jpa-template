@@ -39,13 +39,13 @@ public abstract class PersistentEntity implements Serializable {
 
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "create_date")
-    private Date createDate;
+    @Column(name = "created_on")
+    private Date createdOn;
 
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modify_date")
-    private Date modifyDate;
+    @Column(name = "updated_on")
+    private Date updatedOn;
 
     /**
      * Converts an entity to JSON representation.
