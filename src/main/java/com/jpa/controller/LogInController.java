@@ -84,14 +84,28 @@ public class LogInController extends BaseController {
      * @param response the spark HTTP response object
      */
     private void onLogOut(Request request, Response response) {
-        modelAuthenticate(null);
-        request.session().invalidate();
-        navTo(response, "home");
+
+        try {
+            authenticationMap.remove((String) retrieveAuthentication(request).get().getPrincipal());
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            modelAuthenticate(null);
+            request.session().invalidate();
+            navTo(response, "home");
+        }
     }
 
 
     private void onSuccessfulAuthentication(Request request, Response response) {
-        getSharedModel().set("loggedIn", true).set("user", onRetrieveUser(request).orElse(null));
+
+        try {
+            authenticationMap.put((String) retrieveAuthentication(request).get().getPrincipal(),
+                    onRetrieveUser(request).orElse(null));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         navTo(response, "home");
     }
 

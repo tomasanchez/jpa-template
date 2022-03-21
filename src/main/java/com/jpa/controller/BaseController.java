@@ -1,6 +1,7 @@
 package com.jpa.controller;
 
 import static spark.Spark.halt;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -32,6 +33,8 @@ public abstract class BaseController extends Controller {
 
     protected static GlobalExceptionHandler exceptionHandler = new GlobalExceptionHandler();
 
+    protected static final Map<String, User> authenticationMap = new HashMap<>();
+
     /* =========================================================== */
     /* LifeCycle Override Methods -------------------------------- */
     /* =========================================================== */
@@ -45,8 +48,10 @@ public abstract class BaseController extends Controller {
                 .equals(ControllerLoaderService.getService().find("login").getEndPoint())) {
             return;
         }
+
         // This is used for logged in session.
         getSharedModel().set("loggedIn", isLogged(request));
+        getSharedModel().set("user", onRetrieveUser(retrieveAuthentication(request).orElse(null)));
         setCorrespondingViewLinks(request);
     }
 
@@ -156,6 +161,15 @@ public abstract class BaseController extends Controller {
         }
     }
 
+    protected static User onRetrieveUser(Authentication authentication) {
+
+        try {
+            return authenticationMap.get(authentication.getPrincipal());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Reloads user data from the database.
      * 
@@ -187,11 +201,9 @@ public abstract class BaseController extends Controller {
 
         try {
 
-            Authentication auth =
-                    retrieveAuthentication(request).orElseThrow(IllegalArgumentException::new);
+            retrieveAuthentication(request).orElseThrow(IllegalArgumentException::new);
 
-            return getSecurityContext().getAuthenticationManager().authenticate(auth)
-                    .isAuthenticated();
+            return true;
         } catch (Exception e) {
             return false;
         }
@@ -262,7 +274,7 @@ public abstract class BaseController extends Controller {
      * @param request the HTTP Spark request object
      * @return an Optional of Authentication
      */
-    private static Optional<Authentication> retrieveAuthentication(Request request) {
+    protected static Optional<Authentication> retrieveAuthentication(Request request) {
 
         try {
             String jwt = request.session().attribute(Authentication.AUTHENTICATION_TOKEN_KEY);
