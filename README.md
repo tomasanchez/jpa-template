@@ -226,12 +226,9 @@ For convenience a method `getModelAndView()` is provided in the Controller super
 
 The **`View`** class provides a layer of abstraction, representing the logic behind the matching and mapping of an `<HTML/>` file. It contains a `Model`, which will be refered as `ViewModel`, this will allow you to reflect the changes in the _actual_ view, the UI. There is a `one-to-one` relation between `Controller` and `View`.
 
+If you want to display your controller view, a web-page, you will need a [`HandleBars`](https://handlebarsjs.com/guide/) file which name should be `<ControllerName>.html.hbs` for this case: `HelloController` must have `Hello.html.hbs` in the directory `main/resources/templates`. 
 
-**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HomeController` would send an html made from the `HomeController.html.hbs` template.
-
-If you want to display your controller view, a web-page, you will need a [`HandleBars`](https://handlebarsjs.com/guide/) file which name should be `<ControllerName>.html.hbs` for this case: `HelloController` must have `Hello.html.hbs` in the directory `resources/templates`. 
-
-**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `/resources/template/` from the file `controllername.html.hbs`. For example your `HelloController` would send an html made from the `Hello.html.hbs` template. The naming is case sensitive, so `hello.html.hbs` won't work out of the box. See how `NotFoundController` has a `NotFound.html.hbs` view file.
+**Note**: Each `Controller` has its own `View` instance, this `View` is loaded from `main/resources/template/` from the file `controllername.html.hbs`. For example your `HelloController` would send an html made from the `Hello.html.hbs` template. The naming is case sensitive, so `hello.html.hbs` won't work out of the box. See how `NotFoundController` has a `NotFound.html.hbs` view file.
 
 <br></br>
 
@@ -283,12 +280,22 @@ Now you can visualize your `Hello.html.hbs` file at <a>https://localhost:7070/he
 #### Model
 
 The **`Model`** is another abstraction, also refered here as **`ViewModel`**, in this case of a `Map<String, Object>`, providing convenience methods such as instantiation via `JSON` or `Properies` _file_. Model also provides fluent setter for properties, and can be joined with other models (puts one map into another).
+This `ViewModel` is used to reflect changes in the User interface.
+
 
 **Note**: Each `View` has a `Model` instance. In addition a `Model` can contain another `Model` within. As a `Controller` has a `View` which contains a `ViewModel`, controllers will have different `ViewModel` instances, however there is a **shared `ViewModel`** among them.
 
 
-![View Example](./assets/view-snippet.svg)
-
+```hbs
+<input
+  name="password"
+  type="password"
+  class="form-control {{isValid}}"
+  id="form-password"
+  placeholder="Enter your password"
+  required="true"
+/>
+```
 
 `{{isValid}}` is a property of the `ViewModel` which can be set/unset by its corresponding controller, in this scenario it is used to modify a `Bootstrap 5` class for the `input form-control`, the `is-invalid` which alerts an error message when set.
 
@@ -309,7 +316,7 @@ public class LoginController extends Controller{
 }
 ```
 
-**NOTE**: None of these properties will be set/unset automatically, unless server restarts or configured by yourself.
+**NOTE**: when reloading page the `ViewModel` is reset to a blank state.
 
 <br></br>
 
@@ -421,7 +428,7 @@ In addition, there is a `PersistentEntitySet<T extends PersistentEntity>` generi
 The interface provided:
 
 ```java
-public abstract class PersistentEntitySet<T extends PersistentEntity> implements WithGlobalEntityManager {
+public abstract class PersistentEntitySet<T> implements WithGlobalEntityManager {
 
     /**
      * Retrieves Table name (class name).
