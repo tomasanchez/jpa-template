@@ -32,6 +32,7 @@
       - [Authorities](#authorities)
       - [Securing Endpoints](#securing-endpoints)
     - [Internationalization](#internationalization)
+  - [Credits](#credits)
   - [License](#license)
 
 
@@ -998,7 +999,9 @@ Will result in:
 />
 ```
 
-<br></br>
+## Credits
+
+This project was facilitated with 💙 by [Tomas Sanchez](https://github.com/tomasanchez).
 
 ## License
 
