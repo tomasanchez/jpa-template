@@ -1,8 +1,8 @@
-# T Sanchez's Spark Seed
+# T Sanchez' Spark MVC - Sprank
 
-- [T Sanchez's Spark Seed](#t-sanchezs-spark-seed)
+- [T Sanchez' Spark MVC - Sprank](#t-sanchez-spark-mvc---sprank)
   - [Spark](#spark)
-  - [About this seed](#about-this-seed)
+  - [About Sprank](#about-sprank)
     - [Features](#features)
   - [Getting Started](#getting-started)
     - [**How does it all work?** TLDR:](#how-does-it-all-work-tldr)
@@ -43,13 +43,13 @@ See also its public [repository](https://github.com/perwendel/spark)
 
 Spark - A micro framework for creating web applications in Kotlin and Java 8 with minimal effort
 
-## About this seed
+## About Sprank
 
-This seed is the result of improving an assigment for __UTN FRBA__, Systems Design Course where it consist of developing a simple web application using an MVC pattern with `Spark Java` and `JPA`. Having [`Bootstrap 5`](https://getbootstrap.com/docs/5.0/getting-started/introduction/) and `HandleBars` for front-end developing.
+Tomas Sanchez Spark MVC implementation: Sprank, is the result of improving an assigment for __UTN FRBA__, Systems Design Course where it consist of developing a simple web application using an MVC pattern with `Spark Java` and `JPA`. Having [`Bootstrap 5`](https://getbootstrap.com/docs/5.0/getting-started/introduction/) and `HandleBars` for front-end developing.
 <br></br>
-The seed provides a minimal set up to arrage your project so you can create a web application with minimal effort.
+The seed provides a minimal set up to arrage your project so you can create a web application with **even less** effort.
 <br></br>
-If you are developing the System Design assignment I highly recommend taking a look at this seed, it will provide a good inspiration and stating point.
+If you are developing the System Design assignment I highly recommend taking a look at this seed, it will provide a good inspiration and can be a reference for your project.
 
 __DISCLAIMER__: using this seed __DOES NOT__ guarantee passing the assignment, nor developers account for responsibility in case of wrong usage of interfaces provided.
 
@@ -139,7 +139,7 @@ This seed proposes the following package structure:
       - filter
       - services
 
-**app**: here it is recommended to initialize the server. Note: this is already provided in the `Router` class.
+**app**: here it is recommended to initialize the server. Note: this is already provided in the `Application` class.
 
 **config**: use this package to develop your own `@Configuration` classes a security configuration is already provided.
 
