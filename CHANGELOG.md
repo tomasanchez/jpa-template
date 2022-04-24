@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/tomasanchez/jpa-template/compare/v2.0.0...v2.1.0) (2022-04-24)
+
+
+### Features
+
+* add simple application initializer ([49dddd4](https://github.com/tomasanchez/jpa-template/commit/49dddd464dda0cc41b30e2dd36532118cb6b423d))
+* **db:** add timestamps ([e79665b](https://github.com/tomasanchez/jpa-template/commit/e79665b61c7ff75d9b3ce173f3295a71cb76456f))
+
+
+### Bug Fixes
+
+* user display & performance ([10495c4](https://github.com/tomasanchez/jpa-template/commit/10495c4609696583e486c0b18e248cc54f41a5a0))
+
 ## [2.0.0](https://github.com/tomasanchez/jpa-template/compare/v1.1.1...v2.0.0) (2022-03-16)
 
 
