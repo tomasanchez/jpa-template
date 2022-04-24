@@ -33,6 +33,11 @@ public final class SecurityConfig extends WebSecurityConfig {
         setSecurityContext(http);
     }
 
+    /**
+     * Obtains the used password-encoder.
+     * 
+     * @return the used password-encoder
+     */
     public static PasswordEncoder getPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
