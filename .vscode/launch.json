@@ -6,9 +6,9 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Server",
+      "name": "Sprank Application",
       "request": "launch",
-      "mainClass": "com.jpa.app.SparkApplication",
+      "mainClass": "com.jpa.app.Application",
       "projectName": "template"
     },
     {
