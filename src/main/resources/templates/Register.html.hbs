@@ -45,10 +45,11 @@
               class="form-control form-control-lg {{isValidPassword}}"
               id="passwordInput"
               placeholder="Password"
+              minlength="{{pwMinLength}}"
               required="true"
             />
             <label class="form-label" for="passwordInput">{{i18n.password}}*</label>
-            <div id="passWordValidation" class="invalid-feedback">{{i18n.wrongPassword}}</div>
+            <div id="passWordValidation" class="invalid-feedback">{{pwInvalidFeedbackMsg}}</div>
           </div>
 
           <!-- Password Input -->
@@ -59,6 +60,7 @@
               class="form-control form-control-lg {{isValidPassword}}"
               id="confirmPassword"
               placeholder="Password"
+              minlength="{{pwMinLength}}"
               required="true"
             />
             <label class="form-label" for="confirmPassword">{{i18n.confirmPassword}}*</label>
