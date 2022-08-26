@@ -6,7 +6,7 @@ import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 import org.uqbarproject.jpa.java8.extras.transaction.TransactionalOps;
 
 /**
- * Bootstrap data initilizates.
+ * Bootstrap data initializes.
  */
 public class Bootstrap implements WithGlobalEntityManager, EntityManagerOps, TransactionalOps {
 
@@ -15,7 +15,7 @@ public class Bootstrap implements WithGlobalEntityManager, EntityManagerOps, Tra
     }
 
     /**
-     * Initializates an admin user.
+     * Initializes an admin user.
      */
     public void bootstrapData() {
         new AuthSeeder().seed();

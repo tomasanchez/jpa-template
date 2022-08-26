@@ -3,8 +3,10 @@ package com.jpa.core.mvc.controller;
 import static spark.Spark.after;
 import static spark.Spark.afterAfter;
 import static spark.Spark.before;
+
 import java.lang.reflect.Method;
 import java.util.Map;
+
 import com.jpa.core.i18n.ResourceBundle;
 import com.jpa.core.mvc.controller.routing.DeleteMapping;
 import com.jpa.core.mvc.controller.routing.GetMapping;
@@ -25,7 +27,7 @@ import spark.TemplateEngine;
 
 /**
  * A generic controller implementation for the TS-JPA Model-View-Controller concept.
- * 
+ *
  * @author Tomás Sánchez
  * @since 1.0
  */
@@ -55,7 +57,7 @@ public abstract class Controller {
     }
 
     /**
-     * Initialices the shared model.
+     * Initializes the shared model.
      */
     static {
         setSharedModel(new Model()).set(NAV_MODEL_NAME, new Model())
@@ -70,7 +72,7 @@ public abstract class Controller {
 
     /**
      * Gets the shared model among controllers.
-     * 
+     *
      * @return A shared model
      */
     public static Model getSharedModel() {
@@ -79,7 +81,7 @@ public abstract class Controller {
 
     /**
      * Sets a shared model among all controllers.
-     * 
+     *
      * @param sharedModel a model to be shared between controllers
      * @return the shared model
      */
@@ -90,7 +92,7 @@ public abstract class Controller {
 
     /**
      * Obtains the current engine used.
-     * 
+     *
      * @return the spark template engine
      */
     public static TemplateEngine getEngine() {
@@ -99,7 +101,7 @@ public abstract class Controller {
 
     /**
      * Sets the current engine to be used.
-     * 
+     *
      * @param templateEngine a spark template engine
      */
     public static void setEngine(TemplateEngine templateEngine) {
@@ -112,7 +114,7 @@ public abstract class Controller {
 
     /**
      * Retrieves the current JSON transformer.
-     * 
+     *
      * @return the JSON response transformer
      */
     public static ResponseTransformer getJsonTransformer() {
@@ -121,7 +123,7 @@ public abstract class Controller {
 
     /**
      * Sets a JSON response transformer to be used by the controllers.
-     * 
+     *
      * @param responseTransformer the JSON response transformer.
      */
     public static void setJsonTransformer(ResponseTransformer responseTransformer) {
@@ -130,7 +132,7 @@ public abstract class Controller {
 
     /**
      * Sets the Web Security Configuration to be used by the controllers.
-     * 
+     *
      * @param wsc a Web Security Configuration to be used
      */
     public static void setSecurityContext(SecurityContext wsc) {
@@ -143,7 +145,7 @@ public abstract class Controller {
 
     /**
      * Retrieves the current controller view.
-     * 
+     *
      * @return the view of the current controller
      */
     public View getView() {
@@ -152,7 +154,7 @@ public abstract class Controller {
 
     /**
      * Sets a controller view.
-     * 
+     *
      * @param view a HandleBars' View object.
      * @return the controller.
      */
@@ -163,9 +165,9 @@ public abstract class Controller {
 
     /**
      * Obtains the controller name to lowercase.
-     * 
+     * <p>
      * ? Example: HomeController => home
-     * 
+     *
      * @return the controller name
      */
     public String getShortName() {
@@ -174,9 +176,9 @@ public abstract class Controller {
 
     /**
      * Obtains the controller name.
-     * 
+     * <p>
      * ? Example: NewObjectController => NewObject
-     * 
+     *
      * @return the controller name
      */
     public String getName() {
@@ -185,9 +187,9 @@ public abstract class Controller {
 
     /**
      * Retrieves the controller endpoint URL.
-     * 
+     * <p>
      * ? Example: HomeController => /home
-     * 
+     *
      * @return the endpoint controlled
      */
     public String getEndPoint() {
@@ -196,7 +198,7 @@ public abstract class Controller {
 
     /**
      * Generates a Model and View.
-     * 
+     *
      * @return a Model and View
      */
     public ModelAndView getModelAndView() {
@@ -205,7 +207,7 @@ public abstract class Controller {
 
     /**
      * Generates a Model and View.
-     * 
+     *
      * @param path the view file path
      * @return a Model and View
      */
@@ -229,8 +231,8 @@ public abstract class Controller {
      * This method is called every time a view is rendered, before the onBeforeRendering filter, is
      * shared between all the controllers. In this implementation it is used to update the
      * Accept-Language, and update the navigational model.
-     * 
-     * @param request the Spark HTTP request object
+     *
+     * @param request  the Spark HTTP request object
      * @param response the Spark HTTP response object
      */
     protected void onBeforeBeforeRendering(Request request, Response response) {
@@ -242,22 +244,20 @@ public abstract class Controller {
     }
 
     /**
-     * 
      * This method is called every time the View is rendered, before the Renderer is called and the
      * HTML is placed in the DOM-Tree. It can be used to perform clean-up-tasks before re-rendering.
-     * 
-     * @param request the Spark HTTP request object
+     *
+     * @param request  the Spark HTTP request object
      * @param response the Spark HTTP response object
      */
     protected abstract void onBeforeRendering(Request request, Response response);
 
     /**
-     * 
      * This method is called every time the View is rendered, after the HTML is placed in the
      * DOM-Tree. It can be used to apply additional changes to the Model after the Renderer has
      * finished.
-     * 
-     * @param request the spark HTTP request object
+     *
+     * @param request  the spark HTTP request object
      * @param response the spark HTTP response object
      */
     protected abstract void onAfterRendering(Request request, Response response);
@@ -265,8 +265,8 @@ public abstract class Controller {
     /**
      * This method is called every time the View is rendered, after the onAfterRendering filter. In
      * this implementation it is used to destroy the previous rendered model.
-     * 
-     * @param request the Spark HTTP request object
+     *
+     * @param request  the Spark HTTP request object
      * @param response the Spark HTTP response object
      */
     protected void onAfterAfterRendering(Request request, Response response) {
@@ -278,7 +278,6 @@ public abstract class Controller {
     /* =========================================================== */
 
     /**
-     * 
      * Inits corresponding endpoints.
      */
     private void onInitEndpoints() {
@@ -330,7 +329,7 @@ public abstract class Controller {
 
     /**
      * Shortcut method for obtainning the final Map model.
-     * 
+     *
      * @return the final map model.
      */
     private Map<String, Object> getModelMap() {
@@ -339,7 +338,7 @@ public abstract class Controller {
 
     /**
      * Updates navigation active class.
-     * 
+     *
      * @param currentView the current view name
      */
     protected void updateNavigationModel(String currentView) {

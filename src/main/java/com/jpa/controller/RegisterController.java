@@ -3,8 +3,10 @@ package com.jpa.controller;
 import java.util.Optional;
 import com.jpa.core.mvc.controller.routing.GetMapping;
 import com.jpa.core.mvc.controller.routing.PostMapping;
+import com.jpa.exceptions.user.InvalidPasswordException;
 import com.jpa.exceptions.user.UserAlreadyExistsException;
 import com.jpa.model.user.User;
+import com.jpa.security.tools.password.PasswordLengthValidation;
 import com.jpa.services.UserService;
 import spark.ModelAndView;
 import spark.Request;
@@ -19,10 +21,7 @@ public class RegisterController extends BaseController {
     /* =========================================================== */
 
     @Override
-    protected void onInit() {
-        // TODO Auto-generated method stub
-
-    }
+    protected void onInit() {}
 
     @Override
     protected void onBeforeRendering(Request request, Response response) {
@@ -32,6 +31,8 @@ public class RegisterController extends BaseController {
             navTo(response, "home");
         }
 
+        getView().getModel().set("pwInvalidFeedbackMsg", getText("wrongPassword"))
+                .set("pwMinLength", PasswordLengthValidation.MIN_PASSWORD_LENGTH);
     }
 
     @Override
@@ -79,12 +80,28 @@ public class RegisterController extends BaseController {
     private Optional<User> onSaveUser(User user) {
 
         try {
+
             return Optional.of(userService.save(user));
+
         } catch (UserAlreadyExistsException uae) {
+
+            // ? Sets Invalid Feedback in username input field.
             toggleUserValidation(false);
+
             return Optional.empty();
+
+        } catch (InvalidPasswordException ipe) {
+
+            // ? Sets Invalid Feedback in password input field.
+            togglePasswordValidation(false);
+            getView().getModel().set("pwInvalidFeedbackMsg", ipe.getMessage());
+
+            return Optional.empty();
+
         } catch (Exception e) {
+
             return Optional.empty();
+
         }
     }
 
