@@ -1,15 +1,14 @@
 package com.jpa.repositories;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import javax.persistence.EntityNotFoundException;
 import com.jpa.model.user.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
+
+import javax.persistence.EntityNotFoundException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class UserRepositoryTest implements WithGlobalEntityManager {
 
@@ -45,9 +44,8 @@ public class UserRepositoryTest implements WithGlobalEntityManager {
         entityManager().flush();
         assertEquals(user.getId(), repository.getEntity(user.getId()).orElse(new User()).getId());
     }
-
     @Test
-    void whenUnexistentID_then_throwsEntityNotFound() {
+    void whenNonexistentID_then_throwsEntityNotFound() {
         assertThrows(EntityNotFoundException.class, () -> assertNull(repository.getEntity("-1L")));
     }
 
