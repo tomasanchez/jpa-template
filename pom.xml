@@ -11,7 +11,7 @@
 
     <name>template</name>
     <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>https://tomasanchez.github.io</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -54,7 +54,7 @@
         <!-- END OF TESTING DEPENDENCIES -->
 
         <!-- BEGIN OF UI dependencies -->
-        <!--SAPRK CORE -->
+        <!--SPARK CORE -->
         <dependency>
             <groupId>com.sparkjava</groupId>
             <artifactId>spark-core</artifactId>
@@ -112,6 +112,11 @@
             <artifactId>jackson-databind</artifactId>
             <version>2.13.2.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-kotlin</artifactId>
+            <version>2.13.2</version>
+        </dependency>
 
         <!-- kotlin -->
         <dependency>
@@ -121,27 +126,23 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <version>${kotlin.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
         </dependency>
 
     </dependencies>
 
     <build>
         <pluginManagement>
-            <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+            <!-- lock down plugins versions to avoid using Maven defaults (maybe moved to parent pom) -->
             <plugins>
+                <!-- Kotlin Maven Plugin -->
                 <plugin>
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-maven-plugin</artifactId>
@@ -154,6 +155,12 @@
                                 <goal>compile</goal>
                             </goals>
                             <configuration>
+                                <args>
+                                    <arg>-Xjsr305=strict</arg>
+                                </args>
+                                <compilerPlugins>
+                                    <plugin>jpa</plugin>
+                                </compilerPlugins>
                                 <sourceDirs>
                                     <source>src/main/java</source>
                                     <source>src/main/resources</source>
@@ -174,6 +181,18 @@
                             </configuration>
                         </execution>
                     </executions>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-allopen</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>org.jetbrains.kotlin</groupId>
+                            <artifactId>kotlin-maven-noarg</artifactId>
+                            <version>${kotlin.version}</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
                 <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
                 <plugin>
