@@ -1,9 +1,5 @@
 package com.jpa.app.seeder;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 import com.jpa.core.security.crypto.BCryptPasswordEncoder;
 import com.jpa.model.user.Privilege;
 import com.jpa.model.user.Role;
@@ -15,21 +11,26 @@ import org.uqbarproject.jpa.java8.extras.EntityManagerOps;
 import org.uqbarproject.jpa.java8.extras.WithGlobalEntityManager;
 import org.uqbarproject.jpa.java8.extras.transaction.TransactionalOps;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+
 public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, TransactionalOps {
 
-    private UserRepository userRepository = new UserRepository();
+    private final UserRepository userRepository = new UserRepository();
 
-    private RoleRepository roleRepository = new RoleRepository();
+    private final RoleRepository roleRepository = new RoleRepository();
 
-    private PrivilegeRepository privilegeRepository = new PrivilegeRepository();
+    private final PrivilegeRepository privilegeRepository = new PrivilegeRepository();
 
 
     /**
-     * The auth seeds follows a hirachy for roles and privileges.
+     * The auth seeds follows a hierarchy for roles and privileges.
      */
     public void seed() {
 
-        generatePrivielges();
+        generatePrivileges();
 
         generateRoles();
 
@@ -38,7 +39,7 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
     }
 
 
-    public void generatePrivielges() {
+    public void generatePrivileges() {
 
         withTransaction(() -> {
             createPrivilegeIfNotExists("READ");
@@ -52,22 +53,20 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
         withTransaction(() -> {
 
             // User Role => Granted with ONLY the [READ] privilege
-            Collection<Privilege> userPrivileges =
-                    Arrays.asList(privilegeRepository.findByName("READ").get());
+            Collection<Privilege> userPrivileges = new ArrayList<>();
+            privilegeRepository.findByName("READ").ifPresent(userPrivileges::add);
             Role roleUser = createRoleIfNotExists("USER", userPrivileges);
 
-            // Staff Role => Granted with all privileges of an User and with the [CREATE] privilege
+            // Staff Role => Granted with all privileges of a User and with the [CREATE] privilege
             Collection<Privilege> staffPrivileges = new HashSet<>();
-
-            staffPrivileges.add(privilegeRepository.findByName("CREATE").get());
+            privilegeRepository.findByName("CREATE").ifPresent(staffPrivileges::add);
             staffPrivileges.addAll(roleUser.getPrivileges());
 
             Role staffRole = createRoleIfNotExists("STAFF", staffPrivileges);
 
-            // Admin Role => Granted with all priviles of a Staff, and includes the [DELETE]
-            // privilege
+            // Admin Role => Granted with all privileges of a Staff, and includes the [DELETE]
             Collection<Privilege> adminPrivileges = new HashSet<>();
-            adminPrivileges.add(privilegeRepository.findByName("DELETE").get());
+            privilegeRepository.findByName("DELETE").ifPresent(adminPrivileges::add);
             adminPrivileges.addAll(staffRole.getPrivileges());
             createRoleIfNotExists("ADMIN", adminPrivileges);
 
@@ -77,31 +76,33 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
     public void generateUsers() {
 
         withTransaction(() -> {
-            createUserIfNotExists("admin", "admin",
-                    "https://images.pexels.com/photos/2726111/pexels-photo-2726111.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-                    roleRepository.findByName("ADMIN").get());
-            createUserIfNotExists("staff", "staff",
-                    "https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-                    roleRepository.findByName("STAFF").get());
-            createUserIfNotExists("user", "user",
-                    "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-                    roleRepository.findByName("USER").get());
+            roleRepository.findByName("ADMIN").ifPresent(role -> createUserIfNotExists("admin", "admin",
+                    "https://images.pexels.com/photos/2726111/pexels-photo-2726111.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                    , role));
+
+            roleRepository.findByName("STAFF").ifPresent(role -> createUserIfNotExists("staff", "staff",
+                    "https://images.pexels.com/photos/2726111/pexels-photo-2726111.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                    , role));
+
+            roleRepository.findByName("USER").ifPresent(role -> createUserIfNotExists("user", "user",
+                    "https://images.pexels.com/photos/2726111/pexels-photo-2726111.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
+                    , role));
         });
 
     }
 
 
     /**
-     * 
-     * @param name
-     * @return
+     * Creates a new privilege if it does not exist.
+     *
+     * @param name The name of the privilege.
+     * @return a new privilege.
      */
     private Privilege createPrivilegeIfNotExists(String name) {
 
         return privilegeRepository.findByName(name).orElseGet(() -> {
             Privilege privilege = new Privilege();
             privilege.setName(name);
-
             return privilegeRepository.createEntity(privilege);
         });
 
@@ -110,8 +111,8 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
 
     /**
      * Persists a new Role when does not exist.
-     * 
-     * @param name the role name
+     *
+     * @param name       the role name
      * @param privileges the associated privileges
      * @return a new Role or the existing one.
      */
@@ -125,9 +126,7 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
 
             // Creates a new privilege for convenience, a ROLE_<roleName>
             Privilege rolePrivilege = createPrivilegeIfNotExists(String.format("ROLE_%s", name));
-
-            Set<Privilege> newPrivileges = new HashSet<>();
-            newPrivileges.addAll(privileges);
+            Set<Privilege> newPrivileges = new HashSet<>(privileges);
             newPrivileges.add(rolePrivilege);
             role.setPrivileges(newPrivileges);
 
@@ -138,16 +137,15 @@ public class AuthSeeder implements WithGlobalEntityManager, EntityManagerOps, Tr
 
 
     /**
-     * Persists an User if does not exist.
-     * 
+     * Persists a User if does not exist.
+     *
      * @param username The username to be used.
      * @param password a raw password.
-     * @param profile an image profile
-     * @param role a new Role
-     * @return a new User or retrieves the existing one
+     * @param profile  an image profile
+     * @param role     a new Role
      */
-    public User createUserIfNotExists(String username, String password, String profile, Role role) {
-        return userRepository.findByUsername(username).orElseGet(() -> {
+    public void createUserIfNotExists(String username, String password, String profile, Role role) {
+        userRepository.findByUsername(username).orElseGet(() -> {
 
             User user = new User(username, new BCryptPasswordEncoder().encode(password));
             user.setRole(role);
