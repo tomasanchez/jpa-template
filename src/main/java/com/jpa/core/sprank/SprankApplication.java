@@ -1,8 +1,5 @@
 package com.jpa.core.sprank;
 
-import static spark.Spark.port;
-import static spark.Spark.staticFileLocation;
-import static spark.debug.DebugScreen.enableDebugScreen;
 import com.jpa.core.mvc.controller.Controller;
 import com.jpa.core.services.ConfigurationLoaderService;
 import com.jpa.core.services.ControllerLoaderService;
@@ -12,12 +9,20 @@ import lombok.Setter;
 import spark.TemplateEngine;
 import spark.template.handlebars.HandlebarsTemplateEngine;
 
+import static spark.Spark.port;
+import static spark.Spark.staticFileLocation;
+import static spark.debug.DebugScreen.enableDebugScreen;
+
 
 /**
+ * <h1>Sprank Application</h3>
+ * <h3>An NTU Coursework Project</h3>
+ * <p>
  * Application made with Spark microframework using some Springboot framework ideas.
- * 
- * By defaults starts with port 8080, enabled debug screen and HandlebarsTemplateEngine.
- * 
+ * </p>
+ * <br/>
+ * <small>By defaults starts with port 8080, enabled debug screen and HandlebarsTemplateEngine.</small>
+ *
  * @author Tomas Sanchez <tosanchez@frba.utn.edu.ar>
  * @version 2.x
  */
@@ -35,8 +40,8 @@ public class SprankApplication {
 
     /**
      * Creates a new pre-built "Sprank" application server for server-side rendering.
-     * 
-     * @param port the port to listen
+     *
+     * @param port      the port to listen
      * @param debugMode if debug screen should be enabled
      */
     public SprankApplication(int port, boolean debugMode) {
@@ -45,11 +50,11 @@ public class SprankApplication {
     }
 
     /**
-     * Runs the Spangk application.
+     * Runs the Sprank application.
      */
     public void run() {
         onInitSpark();
-        onInitSpangk();
+        onInitSprank();
     }
 
 
@@ -66,15 +71,14 @@ public class SprankApplication {
         System.out.println("Initializing server...");
         staticFileLocation("/public");
         port(port);
-        System.out.println(String.format("Listening to port %d.", port));
+        System.out.printf("Listening to port %d.%n", port);
     }
 
     /**
      * Initializes custom micro-framework.
      */
-    private void onInitSpangk() {
+    private void onInitSprank() {
         Controller.setEngine(engine);
-        this.getClass().getCanonicalName();
         ConfigurationLoaderService.getService().loadConfigurations(getClassPath());
         ControllerLoaderService.getService().findAll();
     }
@@ -82,7 +86,7 @@ public class SprankApplication {
 
     /**
      * Obtains a Maven Project classpath for Configuration files.
-     * 
+     *
      * @return the classpath
      */
     private String getClassPath() {
