@@ -1,22 +1,17 @@
 package com.jpa.core.services;
 
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import com.jpa.controller.BaseController;
 import com.jpa.core.mvc.controller.Controller;
 import org.reflections.Reflections;
 
+import java.lang.reflect.Modifier;
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class ControllerLoaderService {
 
-
     private static ControllerLoaderService instance;
-
-    private Map<String, Controller> controllers = new HashMap<String, Controller>();
+    private Map<String, Controller> controllers = new HashMap<>();
 
     /* =========================================================== */
     /* Getters & Setter ------------------------------------------ */
@@ -24,8 +19,8 @@ public class ControllerLoaderService {
 
     /**
      * Gets the Controller Loader Service instance.
-     * 
-     * @return the singeton instance
+     *
+     * @return the singleton instance
      */
     public static ControllerLoaderService getService() {
 
@@ -42,8 +37,8 @@ public class ControllerLoaderService {
     /* =========================================================== */
 
     /**
-     * Locates an specific controller.
-     * 
+     * Locates a specific controller.
+     *
      * @param name of the controller to be found
      * @return a Controller instance or null if not found
      */
@@ -52,12 +47,10 @@ public class ControllerLoaderService {
     }
 
     /**
-     * Retrieves all controllers availables.
-     * 
-     * @return a set of controllers.
+     * Retrieves all controllers available.
      */
-    public Set<Controller> findAll() {
-        return fetchWhenEmpty().values().stream().collect(Collectors.toSet());
+    public void findAll() {
+        fetchWhenEmpty();
     }
 
     /* =========================================================== */
@@ -66,7 +59,7 @@ public class ControllerLoaderService {
 
     /**
      * Verifies if the controller map is empty, if it is triggers the fetch event.
-     * 
+     *
      * @return a map of controllers
      */
     private Map<String, Controller> fetchWhenEmpty() {
@@ -74,8 +67,8 @@ public class ControllerLoaderService {
     }
 
     /**
-     * Uses reflections to get all controllers availables on a controller package.
-     * 
+     * Uses reflections to get all controllers available on a controller package.
+     *
      * @return a map of controllers.
      */
     private Map<String, Controller> fetchControllers() {
@@ -111,9 +104,8 @@ public class ControllerLoaderService {
                                 }
                                 return controller;
                             }).filter(controller -> !Objects.isNull(controller))
-                            .collect(Collectors.toMap(c -> c.getShortName(), c -> c));
+                            .collect(Collectors.toMap(Controller::getShortName, c -> c));
                 });
-
 
 
         if (this.controllers.isEmpty()) {
